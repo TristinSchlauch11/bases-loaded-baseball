@@ -1,0 +1,8 @@
+Bases Loaded Baseball Version History
+
+Current Version: V0.0.0
+
+V0.0.1 - create methods for Player and Game to simulate a single at-bat
+    prints the batter's and pitcher's name, then prints the result of the at-bat
+
+V0.0.0 - create Player.py, Game.py, and Event.py and provide them with empty classes
