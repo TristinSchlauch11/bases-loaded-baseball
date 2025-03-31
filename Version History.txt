@@ -1,8 +1,11 @@
 Bases Loaded Baseball Version History
 
-Current Version: V0.0.0
+Current Version: V0.0.1
+
+V0.1.0 - implements the innings (9) and outs (3) of a baseball game with two teams
+	still uses only one pitcher for both teams, does not track runners or score
 
 V0.0.1 - create methods for Player and Game to simulate a single at-bat
-    prints the batter's and pitcher's name, then prints the result of the at-bat
+	prints the batter's and pitcher's name, then prints the result of the at-bat
 
 V0.0.0 - create Player.py, Game.py, and Event.py and provide them with empty classes
