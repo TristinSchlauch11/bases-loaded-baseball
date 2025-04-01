@@ -4,3 +4,5 @@ This file will be used to track notes, things to do, and things to fix in the pr
 
 - Currently, H% numbers in Event, line 25 (elif b_rand >= 50 and p_rand >= 50:) are incorrect
     - These numbers are adjusted for AVG, not H% (i.e. H/PA)
+
+V0.1.0 Notes: Can I store game-time team information (like score, bat_ind, etc.) into a dictionary? Could help ease information retrieval. Think about implementing this in a future version.
