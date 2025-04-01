@@ -2,6 +2,10 @@ Bases Loaded Baseball Version History
 
 Current Version: V0.0.1
 
+V0.2.0 - implements tracking runners and scores
+    uses a "Wii baseball" running style, no other stats are tracked, and game still
+    ends after Bottom 9
+
 V0.1.0 - implements the innings (9) and outs (3) of a baseball game with two teams
 	still uses only one pitcher for both teams, does not track runners or score
 
