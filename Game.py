@@ -8,6 +8,7 @@ class Game():
         self.__outs = 0
         self.__inning = 1
         self.__half = 0
+        self.__bases = [None, None, None]
         self.__batting = self.__away    # attempting new approach
         self.__pitching = self.__home   # attempting new approach
         self.__batinds = [0, 0]
@@ -42,14 +43,19 @@ class Game():
 
         if result == 1:
             print("single")
+            self.base_hit(1, bat)
         elif result == 2:
             print("double")
+            self.base_hit(2, bat)
         elif result == 3:
             print("triple")
+            self.base_hit(3, bat)
         elif result == 4:
             print("home run")
+            self.base_hit(4, bat)
         elif result == 5:
             print("walk")
+            self.base_hit(1, bat)   ## INCORRECT!!
         elif result == 6:
             print("strikeout")
             self.__outs += 1
@@ -60,6 +66,38 @@ class Game():
             print("air out")
             self.__outs += 1
 
+        self.print_bases()
+        print("")
+        
+    def base_hit(self, num_bases, b):
+        """
+        Updates the Game after a base hit by batter b of the provided number of 
+        bases, num_bases (between 1-4)
+        """
+        # update runners already on bases
+        for i in range(2, num_bases - 1, -1):
+            self.__bases[i] = self.__bases[i - num_bases]
+        # put batter on bases (if not home_run)
+        if num_bases < 4:
+            self.__bases[num_bases - 1] = b
+        # set other bases to empty
+        for i in range(num_bases - 2, -1, -1):
+            self.__bases[i] = None
+
+    def print_bases(self):
+        """
+        A TESTING METHOD FOR THE BASES
+        """
+        message = "["
+        for item in self.__bases:
+            if item is None:
+                message += "None, "
+            else:
+                message += f"{item.get_last()}, "
+        message = message[:-2]
+        message += "]"
+        print(message)
+
     def update_inning(self):
         """
         Updates the game after an inning has ended
@@ -69,10 +107,17 @@ class Game():
         self.__batting = self.__teams[self.__half]
         self.__pitching = self.__teams[self.__half - 1]
         self.__outs = 0
+        self.clear_bases()
         if self.__half == 0:
             print(f"\nTOP {self.__inning}")
         else:
             print(f"\nBOT {self.__inning}")
+
+    def clear_bases(self):
+        """
+        Removes all Players from the bases
+        """
+        self.__bases = [None, None, None]
 
     def check_game(self):
         """
