@@ -1,6 +1,6 @@
 Bases Loaded Baseball Version History
 
-Current Version: V0.1.0
+Current Version: V0.2.0
 
 V0.2.1 - correctly implements walking
 
