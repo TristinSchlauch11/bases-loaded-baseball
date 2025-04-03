@@ -2,6 +2,13 @@ Bases Loaded Baseball Version History
 
 Current Version: V0.2.0
 
+V0.4.0 - implements ability to substitute relief pitchers into game
+
+V0.3.1 - implements extra-innings runner rule
+
+V0.3.0 - implements correct game-ending scenarios
+    does not yet implement extra-innings runner rule
+
 V0.2.1 - correctly implements walking
 
 V0.2.0 - implements tracking runners and scores
