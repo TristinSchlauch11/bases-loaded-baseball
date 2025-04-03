@@ -8,6 +8,7 @@ class Game():
         self.__outs = 0
         self.__inning = 1
         self.__half = 0
+        self.__score = [0, 0]
         self.__bases = [None, None, None]
         self.__batting = self.__away    # attempting new approach
         self.__pitching = self.__home   # attempting new approach
@@ -31,6 +32,7 @@ class Game():
             self.__over = self.check_game()
             if not self.__over and self.__outs == 3:
                 self.update_inning()
+        print(f"{self.__away.get_name()} {self.__score[0]} @ {self.__home.get_name()} {self.__score[1]}")
 
     def at_bat(self, bat, pit):
         """
@@ -68,21 +70,31 @@ class Game():
 
         self.print_bases()
         print("")
-        
+
     def base_hit(self, num_bases, b):
         """
         Updates the Game after a base hit by batter b of the provided number of 
         bases, num_bases (between 1-4)
         """
+        # scores any runners, if required
+        for i in range(2, max(2 - num_bases, -1), -1):
+            if self.__bases[i] is not None:
+                print(f"{self.__bases[i].get_last()} scores!")
+                self.__score[self.__half] += 1
+
         # update runners already on bases
-        for i in range(2, num_bases - 1, -1):
-            self.__bases[i] = self.__bases[i - num_bases]
-        # put batter on bases (if not home_run)
+        for j in range(2, num_bases - 1, -1):
+            self.__bases[j] = self.__bases[j - num_bases]
+        
+        # put batter on bases if not home run, otherwise score the run
         if num_bases < 4:
             self.__bases[num_bases - 1] = b
+        else:
+            self.__score[self.__half] += 1
+        
         # set other bases to empty
-        for i in range(num_bases - 2, -1, -1):
-            self.__bases[i] = None
+        for k in range(num_bases - 2, -1, -1):
+            self.__bases[k] = None
 
     def print_bases(self):
         """
