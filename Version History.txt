@@ -1,6 +1,6 @@
 Bases Loaded Baseball Version History
 
-Current Version: V0.2.0
+Current Version: V0.2.1
 
 V0.4.0 - implements ability to substitute relief pitchers into game
 
