@@ -24,9 +24,19 @@ class Game():
             bat = self.__batting.get_batter(self.__batinds[self.__half])
             pit = self.__pitching.get_pitcher()
 
+            # print next batter and pitcher
+            print(f"Batter: {bat.get_last()}")
+            print(f"Pitcher: {pit.get_last()}")
+
             # execute PA
-            self.at_bat(bat, pit)
-            self.__batinds[self.__half] = (self.__batinds[self.__half] + 1) % 9
+            sel = input("\nEnter 'h' to hit, 's' to substitute >> ")
+            if sel == "h":
+                self.at_bat(bat, pit)
+                self.__batinds[self.__half] = (self.__batinds[self.__half] + 1) % 9
+            elif sel == "s":
+                print("Substitution menu under construction.\n")
+            else:
+                print("Invalid entry.\n")
 
             # check game status
             self.__over = self.check_game()
@@ -37,10 +47,7 @@ class Game():
     def at_bat(self, bat, pit):
         """
         Executes an at-bat between Batter bat and Pitcher pit
-        """
-        print(f"Batter: {bat.get_last()}")
-        print(f"Pitcher: {pit.get_last()}")
-        
+        """        
         result = e.ab(bat, pit)
 
         if result == 1:
