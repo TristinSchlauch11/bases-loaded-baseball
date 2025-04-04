@@ -155,9 +155,22 @@ class Game():
         """
         Checks if the game is over
 
-        FOR NOW, this is a dummy method that needs to be updated later
+        The game will end if it is the 9th inning or later AND ONE OF:
+            1. The home team is winning after the top of the inning ends
+            2. The home team takes the lead in the bottom of the inning
+            3. The away team is winning after the bottom of the inning ends 
         """
-        return self.__inning >= 9 and self.__half == 1 and self.__outs >= 3
+        # check if any of these three conditions are met
+        if self.__inning >= 9:
+            if self.__half == 0 and self.__outs >= 3 and self.__score[1] > self.__score[0]:
+                return True
+            if self.__half == 1 and self.__score[1] > self.__score[0]:
+                return True
+            if self.__half == 1 and self.__outs >= 3 and self.__score[0] > self.__score[1]:
+                return True
+        # if not in 9th inning or later, or no conditions met:
+        return False
+        
 
 # for testing purposes
 bluejays = Team("Blue Jays")
