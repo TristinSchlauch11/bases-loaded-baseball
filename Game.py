@@ -28,13 +28,20 @@ class Game():
             print(f"Batter: {bat.get_last()}")
             print(f"Pitcher: {pit.get_last()}")
 
-            # execute PA
-            sel = input("\nEnter 'h' to hit, 's' to substitute >> ")
+            # make next selection
+            sel = input("\nEnter 'h' to hit, 's' to substitute, or 'q' to quit game >> ")
+            # execute next PA
             if sel == "h":
                 self.at_bat(bat, pit)
                 self.__batinds[self.__half] = (self.__batinds[self.__half] + 1) % 9
+            # attempt to make substitution
             elif sel == "s":
                 print("Substitution menu under construction.\n")
+            # request to quit game, confirm with user
+            elif sel == "q":
+                quit_sel = input("You are trying to quit the game. Enter 'y' to quit >> ")
+                if quit_sel == "y":
+                    break   # need to break completely from loop, otherwise check_game will make self.__over False again
             else:
                 print("Invalid entry.\n")
 
