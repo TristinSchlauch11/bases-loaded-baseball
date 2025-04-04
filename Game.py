@@ -46,24 +46,44 @@ class Game():
         if result == 1:
             print("single")
             self.base_hit(1, bat)
+
         elif result == 2:
             print("double")
             self.base_hit(2, bat)
+
         elif result == 3:
             print("triple")
             self.base_hit(3, bat)
+
         elif result == 4:
             print("home run")
             self.base_hit(4, bat)
+
         elif result == 5:
             print("walk")
-            self.base_hit(1, bat)   ## INCORRECT!!
+            # if bases are loaded, score a run and advance all runners
+            if None not in self.__bases:
+                self.__score[self.__half] += 1
+                for i in range(2, 0, -1):
+                    self.__bases[i] = self.__bases[i-1]
+                self.__bases[0] = bat
+            # otherwise advance needed runners only
+            else:
+                for j in range(0, 3):
+                    if j == 2 or self.__bases[j] is None:
+                        for k in range(j, 0, -1):
+                            self.__bases[k] = self.__bases[k-1]
+                        self.__bases[0] = bat
+                        break
+
         elif result == 6:
             print("strikeout")
             self.__outs += 1
+
         elif result == 7:
             print("ground out")
             self.__outs += 1
+
         elif result == 8:
             print("air out")
             self.__outs += 1
