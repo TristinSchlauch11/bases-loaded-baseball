@@ -144,6 +144,10 @@ class Game():
             print(f"\nTOP {self.__inning}")
         else:
             print(f"\nBOT {self.__inning}")
+        
+        # extra innings rule
+        if self.__inning >= 10:
+            self.__bases[1] = self.__batting.get_batter(self.__batinds[self.__half] - 1)
 
     def clear_bases(self):
         """
