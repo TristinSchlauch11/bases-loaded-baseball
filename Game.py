@@ -32,7 +32,7 @@ class Game():
             
             # execute next PA
             if sel == "h":
-                self.at_bat(bat, pit)
+                self.plate_app(bat, pit)
                 self.__batting["bat_ind"] = (self.__batting["bat_ind"] + 1) % 9
             # attempt to make substitution
             elif sel == "s":
@@ -52,13 +52,13 @@ class Game():
             self.__over = self.check_game()
             if not self.__over and self.__outs == 3:
                 self.update_inning()
-        print(f"{self.__away_info['team'].get_name()} {self.__away_info['score']} @ {self.__home_info['team'].get_name()} {self.__home_info['score']}")
+        self.print_score()
 
-    def at_bat(self, bat, pit):
+    def plate_app(self, bat, pit):
         """
-        Executes an at-bat between Batter bat and Pitcher pit
+        Executes a plate appearance between Batter bat and Pitcher pit
         """        
-        result = e.ab(bat, pit)
+        result = e.pa(bat, pit)
 
         if result == 1:
             print("single")
@@ -82,6 +82,7 @@ class Game():
             if None not in self.__bases:
                 print(f"{self.__bases[2].get_last()} scores!")
                 self.__batting["score"] += 1
+                self.print_score()
                 for i in range(2, 0, -1):
                     self.__bases[i] = self.__bases[i-1]
                 self.__bases[0] = bat
@@ -106,7 +107,7 @@ class Game():
             print("air out")
             self.__outs += 1
 
-        self.print_bases()
+        # self.print_bases()
         print("")
 
     def base_hit(self, num_bases, b):
@@ -114,11 +115,13 @@ class Game():
         Updates the Game after a base hit by batter b of the provided number of 
         bases, num_bases (between 1-4)
         """
+        runs_scored = False
         # scores any runners, if required
         for i in range(2, max(2 - num_bases, -1), -1):
             if self.__bases[i] is not None:
                 print(f"{self.__bases[i].get_last()} scores!")
                 self.__batting["score"] += 1
+                runs_scored = True
 
         # update runners already on bases
         for j in range(2, num_bases - 1, -1):
@@ -129,10 +132,15 @@ class Game():
             self.__bases[num_bases - 1] = b
         else:
             self.__batting["score"] += 1
+            runs_scored = True
         
         # set other bases to empty
         for k in range(num_bases - 2, -1, -1):
             self.__bases[k] = None
+
+        # print updated score if necessary
+        if runs_scored:
+            self.print_score()
 
     def print_bases(self):
         """
@@ -148,6 +156,12 @@ class Game():
         message += "]"
         print(message)
 
+    def print_score(self):
+        """
+        Prints the current score in the Game
+        """
+        print(f"{self.__away_info['team'].get_name()} {self.__away_info['score']} @ {self.__home_info['team'].get_name()} {self.__home_info['score']}")
+
     def update_inning(self):
         """
         Updates the game after an inning has ended
@@ -156,6 +170,7 @@ class Game():
         self.__half = (self.__half + 1) % 2
         self.__outs = 0
         self.clear_bases()
+        self.print_score()
         if self.__half == 0:
             print(f"\nTOP {self.__inning}")
             self.__batting = self.__away_info       # attempting new approach

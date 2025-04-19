@@ -1,6 +1,6 @@
 import random
 
-def ab(bat, pit):
+def pa(bat, pit):
     """
     Generates two random numbers to determine the result of a simulated
     at-bat between Batter bat and Pitcher pit
