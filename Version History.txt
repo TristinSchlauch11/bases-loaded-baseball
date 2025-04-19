@@ -2,6 +2,18 @@ Bases Loaded Baseball Version History
 
 Current Version: V0.4.0
 
+V0.5.0 - begins to fix some "situational baseball" circumstances like GIDPs and SFs
+    on a fly out with a runner on 3rd, 25% chance of a SF
+    on a groundout with a runner on first:
+ 	    - 60% chance of GIDP 
+	    - 25% chance of FC, out at 2nd
+	    - 15% chance of groundout, runner advances to 2nd
+    on a ground ball with bases loaded and 0 out:
+	    - will try to do a 2-3 DP (these percentages needs to be able to vary)
+		    - 5% chance of GIDP
+		    - 10% chance of FC, out at home
+		    - 85% chance of trying a standard DP instead (see probabilities above)
+
 V0.4.0 - implements ability to substitute relief pitchers into game
 
 V0.3.1 - implements extra-innings runner rule

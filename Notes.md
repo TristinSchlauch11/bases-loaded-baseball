@@ -7,3 +7,4 @@ This file will be used to track notes, things to do, and things to fix in the pr
 
 V0.1.0 Notes: Can I store game-time team information (like score, bat_ind, etc.) into a dictionary? Could help ease information retrieval. Think about implementing this in a future version.
 V0.4.0 Notes: I am implementing this dictionary now. It will be put into the Game class and will prevent me from needing to call get_pitcher every at-bat (or even every half-inning)
+V0.5.0 Notes: I might need to brush up on some "official rulings" in regards to how groundouts, air outs, etc. get counted
