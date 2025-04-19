@@ -7,9 +7,8 @@ class Game():
         self.__outs = 0
         self.__inning = 1
         self.__half = 0
-        self.__away_info = {"team" : away, "score" : 0, "bat_ind" : 0, "pitcher" : away.get_pitcher()}
-        self.__home_info = {"team" : home, "score" : 0, "bat_ind" : 0, "pitcher" : home.get_pitcher()}
-        self.__teams = [self.__away_info, self.__home_info]
+        self.__away_info = {"team" : away, "score" : 0, "bat_ind" : 0, "pitcher" : away.get_pitcher(), "used" : [away.get_pitcher()]}
+        self.__home_info = {"team" : home, "score" : 0, "bat_ind" : 0, "pitcher" : home.get_pitcher(), "used" : [home.get_pitcher()]}
         self.__bases = [None, None, None]
         self.__batting = self.__away_info       # attempting new approach
         self.__pitching = self.__home_info      # attempting new approach
@@ -30,13 +29,17 @@ class Game():
 
             # make next selection
             sel = input("\nEnter 'h' to hit, 's' to substitute, or 'q' to quit game >> ")
+            
             # execute next PA
             if sel == "h":
                 self.at_bat(bat, pit)
                 self.__batting["bat_ind"] = (self.__batting["bat_ind"] + 1) % 9
             # attempt to make substitution
             elif sel == "s":
-                print("Substitution menu under construction.\n")
+                if (new_pitch := self.__pitching["team"].select_rp(self.__pitching["pitcher"], self.__pitching["used"])) is not None:
+                    self.__pitching["pitcher"] = new_pitch
+                    self.__pitching["used"].append(new_pitch)
+                print(f"Now pitching: {self.__pitching['pitcher'].get_last()}\n")
             # request to quit game, confirm with user
             elif sel == "q":
                 quit_sel = input("You are trying to quit the game. Enter 'y' to quit >> ")
@@ -77,7 +80,7 @@ class Game():
             print("walk")
             # if bases are loaded, score a run and advance all runners
             if None not in self.__bases:
-                print(f"{self.__bases[i].get_last()} scores!")
+                print(f"{self.__bases[2].get_last()} scores!")
                 self.__batting["score"] += 1
                 for i in range(2, 0, -1):
                     self.__bases[i] = self.__bases[i-1]
@@ -151,14 +154,16 @@ class Game():
         """
         self.__inning += self.__half
         self.__half = (self.__half + 1) % 2
-        self.__batting = self.__teams[self.__half]
-        self.__pitching = self.__teams[self.__half - 1]
         self.__outs = 0
         self.clear_bases()
         if self.__half == 0:
             print(f"\nTOP {self.__inning}")
+            self.__batting = self.__away_info       # attempting new approach
+            self.__pitching = self.__home_info      # attempting new approach
         else:
             print(f"\nBOT {self.__inning}")
+            self.__batting = self.__home_info       # attempting new approach
+            self.__pitching = self.__away_info      # attempting new approach
         
         # extra innings rule
         if self.__inning >= 10:
