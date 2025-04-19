@@ -4,15 +4,15 @@ import Event as e
 
 class Game():
     def __init__(self, home, away):
-        self.__teams = self.__away, self.__home = away, home
         self.__outs = 0
         self.__inning = 1
         self.__half = 0
-        self.__score = [0, 0]
+        self.__away_info = {"team" : away, "score" : 0, "bat_ind" : 0, "pitcher" : away.get_pitcher()}
+        self.__home_info = {"team" : home, "score" : 0, "bat_ind" : 0, "pitcher" : home.get_pitcher()}
+        self.__teams = [self.__away_info, self.__home_info]
         self.__bases = [None, None, None]
-        self.__batting = self.__away    # attempting new approach
-        self.__pitching = self.__home   # attempting new approach
-        self.__batinds = [0, 0]
+        self.__batting = self.__away_info       # attempting new approach
+        self.__pitching = self.__home_info      # attempting new approach
         self.__over = False
 
     def play(self):
@@ -21,8 +21,8 @@ class Game():
         """
         while not self.__over:
             # get batter and pitcher
-            bat = self.__batting.get_batter(self.__batinds[self.__half])
-            pit = self.__pitching.get_pitcher()
+            bat = self.__batting["team"].get_batter(self.__batting["bat_ind"])
+            pit = self.__pitching["pitcher"]
 
             # print next batter and pitcher
             print(f"Batter: {bat.get_last()}")
@@ -33,7 +33,7 @@ class Game():
             # execute next PA
             if sel == "h":
                 self.at_bat(bat, pit)
-                self.__batinds[self.__half] = (self.__batinds[self.__half] + 1) % 9
+                self.__batting["bat_ind"] = (self.__batting["bat_ind"] + 1) % 9
             # attempt to make substitution
             elif sel == "s":
                 print("Substitution menu under construction.\n")
@@ -49,7 +49,7 @@ class Game():
             self.__over = self.check_game()
             if not self.__over and self.__outs == 3:
                 self.update_inning()
-        print(f"{self.__away.get_name()} {self.__score[0]} @ {self.__home.get_name()} {self.__score[1]}")
+        print(f"{self.__away_info['team'].get_name()} {self.__away_info['score']} @ {self.__home_info['team'].get_name()} {self.__home_info['score']}")
 
     def at_bat(self, bat, pit):
         """
@@ -77,7 +77,8 @@ class Game():
             print("walk")
             # if bases are loaded, score a run and advance all runners
             if None not in self.__bases:
-                self.__score[self.__half] += 1
+                print(f"{self.__bases[i].get_last()} scores!")
+                self.__batting["score"] += 1
                 for i in range(2, 0, -1):
                     self.__bases[i] = self.__bases[i-1]
                 self.__bases[0] = bat
@@ -114,7 +115,7 @@ class Game():
         for i in range(2, max(2 - num_bases, -1), -1):
             if self.__bases[i] is not None:
                 print(f"{self.__bases[i].get_last()} scores!")
-                self.__score[self.__half] += 1
+                self.__batting["score"] += 1
 
         # update runners already on bases
         for j in range(2, num_bases - 1, -1):
@@ -124,7 +125,7 @@ class Game():
         if num_bases < 4:
             self.__bases[num_bases - 1] = b
         else:
-            self.__score[self.__half] += 1
+            self.__batting["score"] += 1
         
         # set other bases to empty
         for k in range(num_bases - 2, -1, -1):
@@ -161,7 +162,7 @@ class Game():
         
         # extra innings rule
         if self.__inning >= 10:
-            self.__bases[1] = self.__batting.get_batter(self.__batinds[self.__half] - 1)
+            self.__bases[1] = self.__batting["team"].get_batter(self.__batting["bat_ind"] - 1)
 
     def clear_bases(self):
         """
@@ -180,11 +181,11 @@ class Game():
         """
         # check if any of these three conditions are met
         if self.__inning >= 9:
-            if self.__half == 0 and self.__outs >= 3 and self.__score[1] > self.__score[0]:
+            if self.__half == 0 and self.__outs >= 3 and self.__home_info["score"] > self.__away_info["score"]:
                 return True
-            if self.__half == 1 and self.__score[1] > self.__score[0]:
+            if self.__half == 1 and self.__home_info["score"] > self.__away_info["score"]:
                 return True
-            if self.__half == 1 and self.__outs >= 3 and self.__score[0] > self.__score[1]:
+            if self.__half == 1 and self.__outs >= 3 and self.__home_info["score"] < self.__away_info["score"]:
                 return True
         # if not in 9th inning or later, or no conditions met:
         return False
@@ -217,6 +218,5 @@ swansons.add_batter(Player("Reed", "Drinkle"))
 swansons.add_batter(Player("Jason", "Nine"))
 swansons.add_pitcher(Player("Kris", "Clements"), True)
 
-bluejays.print_bullpen()
-# g = Game(bluejays, swansons)
-# g.play()
+g = Game(bluejays, swansons)
+g.play()
