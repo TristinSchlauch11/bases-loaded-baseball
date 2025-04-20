@@ -71,3 +71,20 @@ def out(pit):
         return 7
     else:
         return 8
+    
+def sf():
+    """
+    On a fly out with a runner on 3rd and less than 2 outs, this function 
+    will be called to generate a random number to determine if the out was
+    a sacrifice fly or not
+
+    Returns 1 if the out was a sacrifice fly, 0 otherwise.
+    """
+    # generate random number
+    sf_rand = random.random()*100
+
+    # determine result
+    if sf_rand <= 25:
+        return 1
+    else:
+        return 0

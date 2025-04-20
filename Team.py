@@ -30,6 +30,9 @@ class Team():
     def select_rp(self, curr_pit, used=[]):
         """
         Prompts the user to select a pitcher in the bullpen to switch to in a game
+
+        Returns None if the user selects to not switch or there are no pitchers to switch to
+        Otherwise returns the new Pitcher
         """
         # get a list of all available relief pitchers
         available = self.__bullpen[:]   # create copy of bullpen to use

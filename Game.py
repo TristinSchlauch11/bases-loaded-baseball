@@ -28,7 +28,8 @@ class Game():
             print(f"Pitcher: {pit.get_last()}")
 
             # make next selection
-            sel = input("\nEnter 'h' to hit, 's' to substitute, or 'q' to quit game >> ")
+            # sel = input("\nEnter 'h' to hit, 's' to substitute, or 'q' to quit game >> ")
+            sel = "h"
             
             # execute next PA
             if sel == "h":
@@ -61,23 +62,23 @@ class Game():
         result = e.pa(bat, pit)
 
         if result == 1:
-            print("single")
+            print(f"{bat.get_last()} singles")
             self.base_hit(1, bat)
 
         elif result == 2:
-            print("double")
+            print(f"{bat.get_last()} doubles")
             self.base_hit(2, bat)
 
         elif result == 3:
-            print("triple")
+            print(f"{bat.get_last()} triples")
             self.base_hit(3, bat)
 
         elif result == 4:
-            print("home run")
+            print(f"{bat.get_last()} hits a home run!")
             self.base_hit(4, bat)
 
         elif result == 5:
-            print("walk")
+            print(f"{bat.get_last()} walks")
             # if bases are loaded, score a run and advance all runners
             if None not in self.__bases:
                 print(f"{self.__bases[2].get_last()} scores!")
@@ -96,15 +97,27 @@ class Game():
                         break
 
         elif result == 6:
-            print("strikeout")
+            print(f"{bat.get_last()} strikes out!")
             self.__outs += 1
 
         elif result == 7:
-            print("ground out")
+            print(f"{bat.get_last()} grounds out")
             self.__outs += 1
 
         elif result == 8:
-            print("air out")
+            # determine if there is a sac fly
+            if self.__outs < 2 and self.__bases[2] is not None and e.sf() == 1:
+                print(f"{bat.get_last()} hits a sacrifice fly")
+                print(f"{self.__bases[2].get_last()} scores!")
+                self.__batting["score"] += 1
+                self.print_score()
+                self.__bases[2] = None
+            
+            # no sac fly
+            else:
+                print(f"{bat.get_last()} flies out")
+            
+            # in both cases
             self.__outs += 1
 
         # self.print_bases()
