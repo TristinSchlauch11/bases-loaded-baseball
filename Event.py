@@ -64,13 +64,14 @@ def out(pit):
     # generate random number
     o_rand = random.random()*100
 
-    # determine result
-    if o_rand < 34:
-        return 6
-    elif o_rand < 68:
-        return 7
-    else:
-        return 8
+    # # determine result
+    # if o_rand < 34:
+    #     return 6
+    # elif o_rand < 68:
+    #     return 7
+    # else:
+    #     return 8
+    return 7        # TESTING
     
 def sf():
     """
@@ -88,3 +89,25 @@ def sf():
         return 1
     else:
         return 0
+    
+def gidp():
+    """
+    On a groundout with a runner on 1st and less than 2 outs, this function
+    will be called to generate a random number to determine if the out was 
+    a double play, fielder's choice, or ground out (out at 1st only)
+
+    Returns a number that represents the generated outcome:
+    1 - GIDP (out at 2nd and 1st)
+    2 - FC (out at 2nd)
+    3 - groundout (out at 1st)
+    """
+    # generate random number
+    gidp_rand = random.random()*100
+
+    # determine result
+    if gidp_rand <= 60:
+        return 1
+    elif gidp_rand <= 85:
+        return 2
+    else:
+        return 3

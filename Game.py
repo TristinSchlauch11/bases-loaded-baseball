@@ -29,8 +29,8 @@ class Game():
 
             # make next selection
             # sel = input("\nEnter 'h' to hit, 's' to substitute, or 'q' to quit game >> ")
-            sel = "h"
-            
+            sel = "h"       # TESTING
+
             # execute next PA
             if sel == "h":
                 self.plate_app(bat, pit)
@@ -101,8 +101,67 @@ class Game():
             self.__outs += 1
 
         elif result == 7:
-            print(f"{bat.get_last()} grounds out")
-            self.__outs += 1
+
+            # determine if a double play is possible
+            if self.__outs < 2 and self.__bases[0] is not None:
+                gidp_result = e.gidp()
+
+                if gidp_result == 1:
+                    # GIDP (out at 2nd and 1st)
+                    print(f"{bat.get_last()} grounds into a double play")
+                    print(f"{self.__bases[0].get_last()} out at 2nd")
+                    self.__outs += 2
+
+                    # if runner on 3rd and inning is not over, runner scores
+                    if self.__bases[2] is not None and self.__outs != 3:
+                        print(f"{self.__bases[2].get_last()} scores!")
+                        self.__batting["score"] += 1
+                        self.print_score()
+
+                    # advance other runner
+                    self.__bases[2] = self.__bases[1]
+                    self.__bases[1] = None
+                    self.__bases[0] = None
+
+                elif gidp_result == 2:
+                    # FC (out at 2nd)
+                    print(f"{bat.get_last()} grounds into a fielder's choice")
+                    print(f"{self.__bases[0].get_last()} out at 2nd")
+                    self.__outs += 1
+
+                    # if runner on 3rd, runner scores
+                    # inning can't end in this scenario, so don't need to check it
+                    if self.__bases[2] is not None:
+                        print(f"{self.__bases[2].get_last()} scores!")
+                        self.__batting["score"] += 1
+                        self.print_score()
+
+                    # advance other runners
+                    self.__bases[2] = self.__bases[1]
+                    self.__bases[1] = None
+                    self.__bases[0] = bat
+
+                elif gidp_result == 3:
+                    # groundout (out at 1st)
+                    print(f"{bat.get_last()} grounds out")
+                    self.__outs += 1
+
+                    # if runner on 3rd, runner scores
+                    # inning can't end in this scenario, so don't need to check it
+                    if self.__bases[2] is not None:
+                        print(f"{self.__bases[2].get_last()} scores!")
+                        self.__batting["score"] += 1
+                        self.print_score()
+
+                    # advance other runners
+                    self.__bases[2] = self.__bases[1]
+                    self.__bases[1] = self.__bases[0]
+                    self.__bases[0] = None
+
+            # if no runner on first, other runners are not forced and will not advance
+            else:
+                print(f"{bat.get_last()} grounds out")
+                self.__outs += 1
 
         elif result == 8:
             # determine if there is a sac fly
@@ -192,7 +251,8 @@ class Game():
             print(f"\nBOT {self.__inning}")
             self.__batting = self.__home_info       # attempting new approach
             self.__pitching = self.__away_info      # attempting new approach
-        
+        self.__bases[0] = self.__batting["team"].get_batter(self.__batting["bat_ind"] - 1)      # TESTING
+
         # extra innings rule
         if self.__inning >= 10:
             self.__bases[1] = self.__batting["team"].get_batter(self.__batting["bat_ind"] - 1)
