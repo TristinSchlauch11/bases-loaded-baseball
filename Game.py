@@ -104,24 +104,31 @@ class Game():
 
             # determine if a double play is possible
             if self.__outs < 2 and self.__bases[0] is not None:
-                gidp_result = e.gidp()
+
+                # determine the type of double play scenario and call the appropriate gidp function
+                if None not in self.__bases:        # bases loaded
+                    gidp_result = e.gidp(3)
+                elif self.__bases[1] is not None:   # runners on 1st and 2nd
+                    gidp_result = e.gidp(2)
+                else:                               # runners on 1st and 3rd, or only on 1st
+                    gidp_result = e.gidp(1)
 
                 if gidp_result == 1:
-                    # GIDP (out at 2nd and 1st)
-                    print(f"{bat.get_last()} grounds into a double play")
-                    print(f"{self.__bases[0].get_last()} out at 2nd")
-                    self.__outs += 2
+                    # groundout (out at 1st)
+                    print(f"{bat.get_last()} grounds out")
+                    self.__outs += 1
 
-                    # if runner on 3rd and inning is not over, runner scores
-                    if self.__bases[2] is not None and self.__outs != 3:
+                    # if runner on 3rd, runner scores
+                    # inning can't end in this scenario, so don't need to check it
+                    if self.__bases[2] is not None:
                         print(f"{self.__bases[2].get_last()} scores!")
                         self.__batting["score"] += 1
                         self.print_score()
 
-                    # advance other runner
-                    self.__bases[2] = self.__bases[1]
-                    self.__bases[1] = None
-                    self.__bases[0] = None
+                    # advance other runners
+                    self.__bases[2] = self.__bases[1]   # runner on 2nd (if any) goes to 3rd
+                    self.__bases[1] = self.__bases[0]   # runner safe at 2nd
+                    self.__bases[0] = None              # batter out at 1st
 
                 elif gidp_result == 2:
                     # FC (out at 2nd)
@@ -137,26 +144,26 @@ class Game():
                         self.print_score()
 
                     # advance other runners
-                    self.__bases[2] = self.__bases[1]
-                    self.__bases[1] = None
-                    self.__bases[0] = bat
+                    self.__bases[2] = self.__bases[1]   # runner on 2nd (if any) goes to 3rd
+                    self.__bases[1] = None              # runner out at 2nd
+                    self.__bases[0] = bat               # batter safe at 1st
 
                 elif gidp_result == 3:
-                    # groundout (out at 1st)
-                    print(f"{bat.get_last()} grounds out")
-                    self.__outs += 1
+                    # GIDP (out at 2nd and 1st)
+                    print(f"{bat.get_last()} grounds into a double play")
+                    print(f"{self.__bases[0].get_last()} out at 2nd")
+                    self.__outs += 2
 
-                    # if runner on 3rd, runner scores
-                    # inning can't end in this scenario, so don't need to check it
-                    if self.__bases[2] is not None:
+                    # if runner on 3rd and inning is not over, runner scores
+                    if self.__bases[2] is not None and self.__outs != 3:
                         print(f"{self.__bases[2].get_last()} scores!")
                         self.__batting["score"] += 1
                         self.print_score()
 
-                    # advance other runners
-                    self.__bases[2] = self.__bases[1]
-                    self.__bases[1] = self.__bases[0]
-                    self.__bases[0] = None
+                    # advance other runner
+                    self.__bases[2] = self.__bases[1]   # runner on 2nd (if any) goes to 3rd
+                    self.__bases[1] = None              # runner out at 2nd
+                    self.__bases[0] = None              # batter out at 1st
 
             # if no runner on first, other runners are not forced and will not advance
             else:

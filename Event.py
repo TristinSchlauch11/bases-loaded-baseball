@@ -90,24 +90,42 @@ def sf():
     else:
         return 0
     
-def gidp():
+def gidp(scenario):
     """
     On a groundout with a runner on 1st and less than 2 outs, this function
     will be called to generate a random number to determine if the out was 
     a double play, fielder's choice, or ground out (out at 1st only)
 
+    Inputs a number that represents the double play 'situation':
+    1 - runner only on 1st, or runners on 1st and 3rd
+    2 - runners on 1st and 2nd -- currently no implementation, uses 
+    3 - bases loaded
+
     Returns a number that represents the generated outcome:
-    1 - GIDP (out at 2nd and 1st)
+    1 - groundout (out at 1st)
     2 - FC (out at 2nd)
-    3 - groundout (out at 1st)
+    3 - GIDP (out at 2nd and 1st)
+    4 - FC (out at home)
+    5 - GIDP (out at home and 1st)
     """
     # generate random number
     gidp_rand = random.random()*100
 
-    # determine result
-    if gidp_rand <= 60:
-        return 1
-    elif gidp_rand <= 85:
-        return 2
-    else:
-        return 3
+    # determine result based on scenario
+    # bases loaded scenario
+    if scenario == 3:
+        if gidp_rand <= 5:
+            return 5
+        elif gidp_rand <= 15:
+            return 4
+        else:
+            return gidp(1)
+    
+    # standard double play scenario (1st and 2nd)
+    if scenario == 1 or scenario == 2:
+        if gidp_rand <= 60:
+            return 3
+        elif gidp_rand <= 85:
+            return 2
+        else:
+            return 1
