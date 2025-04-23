@@ -165,6 +165,32 @@ class Game():
                     self.__bases[1] = None              # runner out at 2nd
                     self.__bases[0] = None              # batter out at 1st
 
+                elif gidp_result == 4:
+                    # FC (out at home)
+                    print(f"{bat.get_last()} grounds into a fielder's choice")
+                    print(f"{self.__bases[2].get_last()} out at home")
+                    self.__outs += 1
+
+                    # no runner will score
+
+                    # advance other runners
+                    self.__bases[2] = self.__bases[1]   # runner on 2nd goes to 3rd
+                    self.__bases[1] = self.__bases[0]   # runner on 1st goes to 2nd
+                    self.__bases[0] = bat               # batter safe at 1st
+
+                elif gidp_result == 5:
+                    # GIDP (out at home and 1st)
+                    print(f"{bat.get_last()} grounds into a double play")
+                    print(f"{self.__bases[2].get_last()} out at home")
+                    self.__outs += 2
+
+                    # no runner will score
+
+                    # advance other runners
+                    self.__bases[2] = self.__bases[1]   # runner on 2nd goes to 3rd
+                    self.__bases[1] = self.__bases[0]   # runner on 1st goes to 2nd
+                    self.__bases[0] = None              # batter out at 1st
+
             # if no runner on first, other runners are not forced and will not advance
             else:
                 print(f"{bat.get_last()} grounds out")
@@ -258,7 +284,6 @@ class Game():
             print(f"\nBOT {self.__inning}")
             self.__batting = self.__home_info       # attempting new approach
             self.__pitching = self.__away_info      # attempting new approach
-        self.__bases[0] = self.__batting["team"].get_batter(self.__batting["bat_ind"] - 1)      # TESTING
 
         # extra innings rule
         if self.__inning >= 10:

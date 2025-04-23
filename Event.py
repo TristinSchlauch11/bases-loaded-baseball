@@ -64,14 +64,13 @@ def out(pit):
     # generate random number
     o_rand = random.random()*100
 
-    # # determine result
-    # if o_rand < 34:
-    #     return 6
-    # elif o_rand < 68:
-    #     return 7
-    # else:
-    #     return 8
-    return 7        # TESTING
+    # determine result
+    if o_rand < 34:
+        return 6
+    elif o_rand < 68:
+        return 7
+    else:
+        return 8
     
 def sf():
     """
@@ -129,3 +128,8 @@ def gidp(scenario):
             return 2
         else:
             return 1
+
+result_dict = {5:0, 4:0, 3:0, 2:0, 1:0}    
+for i in range(10000):
+    result_dict[gidp(3)] += 1
+print(result_dict)
