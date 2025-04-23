@@ -1,6 +1,12 @@
 Bases Loaded Baseball Version History
 
-Current Version: V0.4.0
+Current Version: V0.5.0
+
+V0.6.0 - begins to implement "object-oriented" stat tracking methods for players
+    will track raw batting stats like H, 2B, 3B, HR, BB, R, RBI, AB, PA?
+    will track raw pitching stats like H, BB, GO, AO, K, TBF, ER, IP
+    will not implement two-way players (like Shohei Ohtani) yet
+    will implement after the game is in working order
 
 V0.5.0 - begins to fix some "situational baseball" circumstances like GIDPs and SFs
     on a fly out with a runner on 3rd, 25% chance of a SF
