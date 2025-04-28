@@ -9,3 +9,4 @@ Resolved - V0.1.0 Notes: Can I store game-time team information (like score, bat
 Resolved - V0.4.0 Notes: I am implementing this dictionary now. It will be put into the Game class and will prevent me from needing to call get_pitcher every at-bat (or even every half-inning)
 V0.5.0 Notes: I might need to brush up on some "official rulings" in regards to how groundouts, air outs, etc. get counted
 V0.6.0 Notes: Should I completely abolish the hitter/pitcher viewpoint? What's stopping any pitcher from hitting (or position players from pitching)?
+Is there a way that I can combine the single/double/triple/homerun methods and/or the groundout/airout/strikeout methods? They share a lot of the same accumulation methods and could do something similar to the gidp function in Events

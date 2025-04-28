@@ -1,4 +1,4 @@
-from Player import Player
+from Player import Batter, Pitcher
 from Team import Team
 import Event as e
 
@@ -62,27 +62,45 @@ class Game():
         result = e.pa(bat, pit)
 
         if result == 1:
+            # single
             print(f"{bat.get_last()} singles")
             self.base_hit(1, bat)
+            bat.single()
+            pit.hit()
 
         elif result == 2:
+            # double
             print(f"{bat.get_last()} doubles")
             self.base_hit(2, bat)
+            bat.double()
+            pit.hit()
 
         elif result == 3:
+            # triple
             print(f"{bat.get_last()} triples")
             self.base_hit(3, bat)
+            bat.triple()
+            pit.hit()
 
         elif result == 4:
+            # home run
             print(f"{bat.get_last()} hits a home run!")
             self.base_hit(4, bat)
+            bat.homerun()
+            pit.hit()
 
         elif result == 5:
+            # walk
             print(f"{bat.get_last()} walks")
+            bat.walk()
+            pit.walk()
+
             # if bases are loaded, score a run and advance all runners
             if None not in self.__bases:
                 print(f"{self.__bases[2].get_last()} scores!")
                 self.__batting["score"] += 1
+                self.__bases[2].run()
+                bat.RBI()
                 self.print_score()
                 for i in range(2, 0, -1):
                     self.__bases[i] = self.__bases[i-1]
@@ -97,10 +115,16 @@ class Game():
                         break
 
         elif result == 6:
+            # strikeout
             print(f"{bat.get_last()} strikes out!")
             self.__outs += 1
+            bat.out()
+            pit.strikeout()
 
         elif result == 7:
+            # ground out
+            bat.out()
+            pit.groundout()
 
             # determine if a double play is possible
             if self.__outs < 2 and self.__bases[0] is not None:
@@ -123,6 +147,8 @@ class Game():
                     if self.__bases[2] is not None:
                         print(f"{self.__bases[2].get_last()} scores!")
                         self.__batting["score"] += 1
+                        self.__bases[2].run()
+                        bat.RBI()
                         self.print_score()
 
                     # advance other runners
@@ -141,6 +167,8 @@ class Game():
                     if self.__bases[2] is not None:
                         print(f"{self.__bases[2].get_last()} scores!")
                         self.__batting["score"] += 1
+                        self.__bases[2].run()
+                        bat.RBI()
                         self.print_score()
 
                     # advance other runners
@@ -158,6 +186,8 @@ class Game():
                     if self.__bases[2] is not None and self.__outs != 3:
                         print(f"{self.__bases[2].get_last()} scores!")
                         self.__batting["score"] += 1
+                        self.__bases[2].run()
+                        # batter does not get RBI on DP
                         self.print_score()
 
                     # advance other runner
@@ -197,17 +227,23 @@ class Game():
                 self.__outs += 1
 
         elif result == 8:
+            # fly out
+            pit.airout()
+
             # determine if there is a sac fly
             if self.__outs < 2 and self.__bases[2] is not None and e.sf() == 1:
                 print(f"{bat.get_last()} hits a sacrifice fly")
+                bat.sacfly()
                 print(f"{self.__bases[2].get_last()} scores!")
                 self.__batting["score"] += 1
+                self.__bases[2].run()
                 self.print_score()
                 self.__bases[2] = None
             
             # no sac fly
             else:
                 print(f"{bat.get_last()} flies out")
+                bat.out()
             
             # in both cases
             self.__outs += 1
@@ -226,6 +262,8 @@ class Game():
             if self.__bases[i] is not None:
                 print(f"{self.__bases[i].get_last()} scores!")
                 self.__batting["score"] += 1
+                self.__bases[i].run()
+                b.RBI()
                 runs_scored = True
 
         # update runners already on bases
@@ -318,30 +356,33 @@ class Game():
 
 # for testing purposes
 bluejays = Team("Blue Jays")
-bluejays.add_batter(Player("Alejandro", "Kirk"))
-bluejays.add_batter(Player("Vladamir", "Guerrero Jr."))
-bluejays.add_batter(Player("Andres", "Gimenez"))
-bluejays.add_batter(Player("Bo", "Bichette"))
-bluejays.add_batter(Player("Ernie", "Clement"))
-bluejays.add_batter(Player("Davis", "Schneider"))
-bluejays.add_batter(Player("Daulton", "Varsho"))
-bluejays.add_batter(Player("George", "Springer"))
-bluejays.add_batter(Player("Anthony", "Santander"))
-bluejays.add_pitcher(Player("Jose", "Berrios"), True)
-bluejays.add_pitcher(Player("Jeff", "Hoffman"), False)
-bluejays.add_pitcher(Player("Yimi", "Garcia"), False)
+bluejays.add_batter(Batter("Alejandro", "Kirk"))
+bluejays.add_batter(Batter("Vladamir", "Guerrero Jr."))
+bluejays.add_batter(Batter("Andres", "Gimenez"))
+bluejays.add_batter(Batter("Bo", "Bichette"))
+bluejays.add_batter(Batter("Ernie", "Clement"))
+bluejays.add_batter(Batter("Davis", "Schneider"))
+bluejays.add_batter(Batter("Daulton", "Varsho"))
+bluejays.add_batter(Batter("George", "Springer"))
+bluejays.add_batter(Batter("Anthony", "Santander"))
+bluejays.add_pitcher(Pitcher("Jose", "Berrios"), True)
+bluejays.add_pitcher(Pitcher("Jeff", "Hoffman"), False)
+bluejays.add_pitcher(Pitcher("Yimi", "Garcia"), False)
 
 swansons = Team("Swansons")
-swansons.add_batter(Player("Sherry", "Lee"))
-swansons.add_batter(Player("Tanner", "Mergle"))
-swansons.add_batter(Player("Teresa", "Three"))
-swansons.add_batter(Player("Tristin", "Schlauch"))
-swansons.add_batter(Player("Sungwoo", "Byun"))
-swansons.add_batter(Player("William", "Blimke"))
-swansons.add_batter(Player("Ryan", "Chan"))
-swansons.add_batter(Player("Reed", "Drinkle"))
-swansons.add_batter(Player("Jason", "Nine"))
-swansons.add_pitcher(Player("Kris", "Clements"), True)
+swansons.add_batter(Batter("Sherry", "Lee"))
+swansons.add_batter(Batter("Tanner", "Mergle"))
+swansons.add_batter(Batter("Teresa", "Three"))
+swansons.add_batter(Batter("Tristin", "Schlauch"))
+swansons.add_batter(Batter("Sungwoo", "Byun"))
+swansons.add_batter(Batter("William", "Blimke"))
+swansons.add_batter(Batter("Ryan", "Chan"))
+swansons.add_batter(Batter("Reed", "Drinkle"))
+swansons.add_batter(Batter("Jason", "Nine"))
+swansons.add_pitcher(Pitcher("Kris", "Clements"), True)
 
 g = Game(bluejays, swansons)
 g.play()
+
+swansons.print_stats()
+bluejays.print_stats()

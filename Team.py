@@ -87,3 +87,10 @@ class Team():
             self.__rotation.append(pit)
         else:
             self.__bullpen.append(pit)
+
+    def print_stats(self):
+        print(f"{self.get_name()} Stats")
+        for batter in self.__lineup:
+            batter.print_stats()
+        for pitcher in self.__rotation:
+            pitcher.print_stats()
