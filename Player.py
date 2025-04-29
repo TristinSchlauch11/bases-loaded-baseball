@@ -167,6 +167,12 @@ class Pitcher(Player):
         Used to add outs that are collected in ways not included in methods above
         """
         self.__outs += outs
+    
+    def earned_run(self):
+        """
+        Adds an earned run to the pitchers count
+        """
+        self.__ERs += 1
 
     def get_IP_calc(self):
         """
@@ -187,4 +193,4 @@ class Pitcher(Player):
         Prints the raw statistics of the Pitcher
         NEED TO UPDATE THIS METHOD LATER
         """
-        print(f"{self.get_last()}: {self.get_IP_disp()} IP, {self.__GOs} GO, {self.__AOs} AO, {self.__Ks} K, {self.__hits} H, {self.__BBs} BB, {self.__TBF} TBF")
+        print(f"{self.get_last()}: {self.get_IP_disp()} IP, {self.__ERs} ER, {self.__GOs} GO, {self.__AOs} AO, {self.__Ks} K, {self.__hits} H, {self.__BBs} BB, {self.__TBF} TBF")

@@ -32,7 +32,7 @@ class Game():
             self.__runner = runner
             self.__pitcher = pitcher
 
-        def advance_from(self, prev_base):
+        def advance(self, prev_base):
             """
             Moves the runner from the the prev_base to this one
             """
@@ -46,13 +46,19 @@ class Game():
             self.__runner = None
             self.__pitcher = None
 
+        def is_empty(self):
+            """
+            Checks if the base is empty
+            """
+            return self.__runner is None
+
     def __init__(self, home, away):
         self.__outs = 0
         self.__inning = 1
         self.__half = 0
         self.__away_info = {"team" : away, "score" : 0, "bat_ind" : 0, "pitcher" : away.get_pitcher(), "used" : [away.get_pitcher()]}
         self.__home_info = {"team" : home, "score" : 0, "bat_ind" : 0, "pitcher" : home.get_pitcher(), "used" : [home.get_pitcher()]}
-        self.__bases = [None, None, None]
+        self.__bases = [Game.Base(), Game.Base(), Game.Base()]
         self.__batting = self.__away_info       # attempting new approach
         self.__pitching = self.__home_info      # attempting new approach
         self.__over = False
@@ -71,7 +77,8 @@ class Game():
             print(f"Pitcher: {pit.get_last()}")
 
             # make next selection
-            sel = input("\nEnter 'h' to hit, 's' to substitute, or 'q' to quit game >> ")
+            # sel = input("\nEnter 'h' to hit, 's' to substitute, or 'q' to quit game >> ")
+            sel = "h"
 
             # execute next PA
             if sel == "h":
@@ -106,28 +113,28 @@ class Game():
         if result == 1:
             # single
             print(f"{bat.get_last()} singles")
-            self.base_hit(1, bat)
+            self.base_hit(1, bat, pit)
             bat.single()
             pit.hit()
 
         elif result == 2:
             # double
             print(f"{bat.get_last()} doubles")
-            self.base_hit(2, bat)
+            self.base_hit(2, bat, pit)
             bat.double()
             pit.hit()
 
         elif result == 3:
             # triple
             print(f"{bat.get_last()} triples")
-            self.base_hit(3, bat)
+            self.base_hit(3, bat, pit)
             bat.triple()
             pit.hit()
 
         elif result == 4:
             # home run
             print(f"{bat.get_last()} hits a home run!")
-            self.base_hit(4, bat)
+            self.base_hit(4, bat, pit)
             bat.homerun()
             pit.hit()
 
@@ -138,20 +145,20 @@ class Game():
             pit.walk()
 
             # if bases are loaded, score a run and advance all runners
-            if None not in self.__bases:
+            if self.bases_loaded():
                 self.score_runner(self.__bases[2])
                 bat.RBI()
                 self.print_score()
                 for i in range(2, 0, -1):
-                    self.__bases[i] = self.__bases[i-1]
-                self.__bases[0] = bat
+                    self.__bases[i].advance(self.__bases[i-1])
+                self.__bases[0].get_on_base(bat, pit)
             # otherwise advance needed runners only
             else:
                 for j in range(0, 3):
-                    if j == 2 or self.__bases[j] is None:
+                    if j == 2 or self.__bases[j].is_empty():
                         for k in range(j, 0, -1):
-                            self.__bases[k] = self.__bases[k-1]
-                        self.__bases[0] = bat
+                            self.__bases[k].advance(self.__bases[k-1])
+                        self.__bases[0].get_on_base(bat, pit)
                         break
 
         elif result == 6:
@@ -167,12 +174,12 @@ class Game():
             pit.groundout()
 
             # determine if a double play is possible
-            if self.__outs < 2 and self.__bases[0] is not None:
+            if self.__outs < 2 and not self.__bases[0].is_empty():
 
                 # determine the type of double play scenario and call the appropriate gidp function
-                if None not in self.__bases:        # bases loaded
+                if self.bases_loaded():             # bases loaded
                     gidp_result = e.gidp(3)
-                elif self.__bases[1] is not None:   # runners on 1st and 2nd
+                elif not self.__bases[1].is_empty:  # runners on 1st and 2nd
                     gidp_result = e.gidp(2)
                 else:                               # runners on 1st and 3rd, or only on 1st
                     gidp_result = e.gidp(1)
@@ -184,78 +191,78 @@ class Game():
 
                     # if runner on 3rd, runner scores
                     # inning can't end in this scenario, so don't need to check it
-                    if self.__bases[2] is not None:
+                    if not self.__bases[2].is_empty():
                         self.score_runner(self.__bases[2])
                         bat.RBI()
                         self.print_score()
 
                     # advance other runners
-                    self.__bases[2] = self.__bases[1]   # runner on 2nd (if any) goes to 3rd
-                    self.__bases[1] = self.__bases[0]   # runner safe at 2nd
-                    self.__bases[0] = None              # batter out at 1st
+                    self.__bases[2].advance(self.__bases[1])    # runner on 2nd (if any) goes to 3rd
+                    self.__bases[1].advance(self.__bases[0])    # runner safe at 2nd
+                    self.__bases[0].clear()                     # batter out at 1st
 
                 elif gidp_result == 2:
                     # FC (out at 2nd)
                     print(f"{bat.get_last()} grounds into a fielder's choice")
-                    print(f"{self.__bases[0].get_last()} out at 2nd")
+                    print(f"{self.__bases[0].runner().get_last()} out at 2nd")
                     self.__outs += 1
 
                     # if runner on 3rd, runner scores
                     # inning can't end in this scenario, so don't need to check it
-                    if self.__bases[2] is not None:
+                    if not self.__bases[2].is_empty():
                         self.score_runner(self.__bases[2])
                         bat.RBI()
                         self.print_score()
 
                     # advance other runners
-                    self.__bases[2] = self.__bases[1]   # runner on 2nd (if any) goes to 3rd
-                    self.__bases[1] = None              # runner out at 2nd
-                    self.__bases[0] = bat               # batter safe at 1st
+                    self.__bases[2].advance(self.__bases[1])    # runner on 2nd (if any) goes to 3rd
+                    self.__bases[1].clear()                     # runner out at 2nd
+                    self.__bases[0].get_on_base(bat, pit)       # batter safe at 1st
 
                 elif gidp_result == 3:
                     # GIDP (out at 2nd and 1st)
                     print(f"{bat.get_last()} grounds into a double play")
-                    print(f"{self.__bases[0].get_last()} out at 2nd")
+                    print(f"{self.__bases[0].runner().get_last()} out at 2nd")
                     self.__outs += 2
                     pit.add_outs(1)
 
                     # if runner on 3rd and inning is not over, runner scores
-                    if self.__bases[2] is not None and self.__outs != 3:
+                    if not self.__bases[2].is_empty() and self.__outs != 3:
                         self.score_runner(self.__bases[2])
                         # batter does not get RBI on DP
                         self.print_score()
 
                     # advance other runner
-                    self.__bases[2] = self.__bases[1]   # runner on 2nd (if any) goes to 3rd
-                    self.__bases[1] = None              # runner out at 2nd
-                    self.__bases[0] = None              # batter out at 1st
+                    self.__bases[2].advance(self.__bases[1])    # runner on 2nd (if any) goes to 3rd
+                    self.__bases[1].clear()                     # runner out at 2nd
+                    self.__bases[0].clear()                     # batter out at 1st
 
                 elif gidp_result == 4:
                     # FC (out at home)
                     print(f"{bat.get_last()} grounds into a fielder's choice")
-                    print(f"{self.__bases[2].get_last()} out at home")
+                    print(f"{self.__bases[2].runner().get_last()} out at home")
                     self.__outs += 1
 
                     # no runner will score
 
                     # advance other runners
-                    self.__bases[2] = self.__bases[1]   # runner on 2nd goes to 3rd
-                    self.__bases[1] = self.__bases[0]   # runner on 1st goes to 2nd
-                    self.__bases[0] = bat               # batter safe at 1st
+                    self.__bases[2].advance(self.__bases[1])    # runner on 2nd goes to 3rd
+                    self.__bases[1].advance(self.__bases[0])    # runner on 1st goes to 2nd
+                    self.__bases[0].get_on_base(bat, pit)       # batter safe at 1st
 
                 elif gidp_result == 5:
                     # GIDP (out at home and 1st)
                     print(f"{bat.get_last()} grounds into a double play")
-                    print(f"{self.__bases[2].get_last()} out at home")
+                    print(f"{self.__bases[2].runner().get_last()} out at home")
                     self.__outs += 2
                     pit.add_outs(1)
 
                     # no runner will score
 
                     # advance other runners
-                    self.__bases[2] = self.__bases[1]   # runner on 2nd goes to 3rd
-                    self.__bases[1] = self.__bases[0]   # runner on 1st goes to 2nd
-                    self.__bases[0] = None              # batter out at 1st
+                    self.__bases[2].advance(self.__bases[1])    # runner on 2nd goes to 3rd
+                    self.__bases[1].advance(self.__bases[0])    # runner on 1st goes to 2nd
+                    self.__bases[0].clear()                     # batter out at 1st
 
             # if no runner on first, other runners are not forced and will not advance
             else:
@@ -267,12 +274,12 @@ class Game():
             pit.airout()
 
             # determine if there is a sac fly
-            if self.__outs < 2 and self.__bases[2] is not None and e.sf() == 1:
+            if self.__outs < 2 and not self.__bases[2].is_empty() and e.sf() == 1:
                 print(f"{bat.get_last()} hits a sacrifice fly")
                 bat.sacfly()
                 self.score_runner(self.__bases[2])
                 self.print_score()
-                self.__bases[2] = None
+                self.__bases[2].clear()
             
             # no sac fly
             else:
@@ -282,48 +289,50 @@ class Game():
             # in both cases
             self.__outs += 1
 
-        # self.print_bases()
         print("")
 
-    def base_hit(self, num_bases, b):
+    def base_hit(self, num_bases, bat, pit):
         """
-        Updates the Game after a base hit by batter b of the provided number of 
-        bases, num_bases (between 1-4)
+        Updates the Game after a base hit by Batter bat of the provided number of 
+        bases, num_bases (between 1-4). Pitcher pit is responsible for the batter
         """
         runs_scored = False
         # scores any runners, if required
         for i in range(2, max(2 - num_bases, -1), -1):
-            if self.__bases[i] is not None:
+            if not self.__bases[i].is_empty():
                 self.score_runner(self.__bases[i])
-                b.RBI()
+                bat.RBI()
                 runs_scored = True
 
         # update runners already on bases
         for j in range(2, num_bases - 1, -1):
-            self.__bases[j] = self.__bases[j - num_bases]
+            self.__bases[j].advance(self.__bases[j - num_bases])
         
         # put batter on bases if not home run, otherwise score the run
         if num_bases < 4:
-            self.__bases[num_bases - 1] = b
+            self.__bases[num_bases - 1].get_on_base(bat, pit)
         else:
             self.__batting["score"] += 1
+            pit.earned_run()
             runs_scored = True
         
         # set other bases to empty
         for k in range(num_bases - 2, -1, -1):
-            self.__bases[k] = None
+            self.__bases[k].clear()
 
         # print updated score if necessary
         if runs_scored:
             self.print_score()
 
-    def score_runner(self, runner):
+    def score_runner(self, base):
         """
-        Scores the given runner
+        Scores the given runner on the given base
         """
-        print(f"{runner.get_last()} scores!")
+        print(f"{base.runner().get_last()} scores!")
         self.__batting["score"] += 1
-        runner.run()
+        if base.pitcher() is not None:
+            base.pitcher().earned_run()
+        base.runner().run()
 
     def update_inning(self):
         """
@@ -345,7 +354,8 @@ class Game():
 
         # extra innings rule
         if self.__inning >= 10:
-            self.__bases[1] = self.__batting["team"].get_batter(self.__batting["bat_ind"] - 1)
+            # no pitcher is responsible for the ghost runner
+            self.__bases[1].get_on_base(self.__batting["team"].get_batter(self.__batting["bat_ind"] - 1), None)
 
     def check_game(self):
         """
@@ -367,11 +377,21 @@ class Game():
         # if not in 9th inning or later, or no conditions met:
         return False
 
+    def bases_loaded(self):
+        """
+        Checks if the bases are loaded
+        """
+        for base in self.__bases:
+            if base.is_empty():
+                return False
+        return True
+
     def clear_bases(self):
         """
         Removes all Players from the bases
         """
-        self.__bases = [None, None, None]
+        for base in self.__bases:
+            base.clear()
 
     def print_score(self):
         """
