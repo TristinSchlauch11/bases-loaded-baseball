@@ -139,9 +139,7 @@ class Game():
 
             # if bases are loaded, score a run and advance all runners
             if None not in self.__bases:
-                print(f"{self.__bases[2].get_last()} scores!")
-                self.__batting["score"] += 1
-                self.__bases[2].run()
+                self.score_runner(self.__bases[2])
                 bat.RBI()
                 self.print_score()
                 for i in range(2, 0, -1):
@@ -187,9 +185,7 @@ class Game():
                     # if runner on 3rd, runner scores
                     # inning can't end in this scenario, so don't need to check it
                     if self.__bases[2] is not None:
-                        print(f"{self.__bases[2].get_last()} scores!")
-                        self.__batting["score"] += 1
-                        self.__bases[2].run()
+                        self.score_runner(self.__bases[2])
                         bat.RBI()
                         self.print_score()
 
@@ -207,9 +203,7 @@ class Game():
                     # if runner on 3rd, runner scores
                     # inning can't end in this scenario, so don't need to check it
                     if self.__bases[2] is not None:
-                        print(f"{self.__bases[2].get_last()} scores!")
-                        self.__batting["score"] += 1
-                        self.__bases[2].run()
+                        self.score_runner(self.__bases[2])
                         bat.RBI()
                         self.print_score()
 
@@ -227,9 +221,7 @@ class Game():
 
                     # if runner on 3rd and inning is not over, runner scores
                     if self.__bases[2] is not None and self.__outs != 3:
-                        print(f"{self.__bases[2].get_last()} scores!")
-                        self.__batting["score"] += 1
-                        self.__bases[2].run()
+                        self.score_runner(self.__bases[2])
                         # batter does not get RBI on DP
                         self.print_score()
 
@@ -278,9 +270,7 @@ class Game():
             if self.__outs < 2 and self.__bases[2] is not None and e.sf() == 1:
                 print(f"{bat.get_last()} hits a sacrifice fly")
                 bat.sacfly()
-                print(f"{self.__bases[2].get_last()} scores!")
-                self.__batting["score"] += 1
-                self.__bases[2].run()
+                self.score_runner(self.__bases[2])
                 self.print_score()
                 self.__bases[2] = None
             
@@ -304,9 +294,7 @@ class Game():
         # scores any runners, if required
         for i in range(2, max(2 - num_bases, -1), -1):
             if self.__bases[i] is not None:
-                print(f"{self.__bases[i].get_last()} scores!")
-                self.__batting["score"] += 1
-                self.__bases[i].run()
+                self.score_runner(self.__bases[i])
                 b.RBI()
                 runs_scored = True
 
@@ -329,25 +317,13 @@ class Game():
         if runs_scored:
             self.print_score()
 
-    def print_bases(self):
+    def score_runner(self, runner):
         """
-        A TESTING METHOD FOR THE BASES
+        Scores the given runner
         """
-        message = "["
-        for item in self.__bases:
-            if item is None:
-                message += "None, "
-            else:
-                message += f"{item.get_last()}, "
-        message = message[:-2]
-        message += "]"
-        print(message)
-
-    def print_score(self):
-        """
-        Prints the current score in the Game
-        """
-        print(f"{self.__away_info['team'].get_name()} {self.__away_info['score']} @ {self.__home_info['team'].get_name()} {self.__home_info['score']}")
+        print(f"{runner.get_last()} scores!")
+        self.__batting["score"] += 1
+        runner.run()
 
     def update_inning(self):
         """
@@ -371,12 +347,6 @@ class Game():
         if self.__inning >= 10:
             self.__bases[1] = self.__batting["team"].get_batter(self.__batting["bat_ind"] - 1)
 
-    def clear_bases(self):
-        """
-        Removes all Players from the bases
-        """
-        self.__bases = [None, None, None]
-
     def check_game(self):
         """
         Checks if the game is over
@@ -396,6 +366,18 @@ class Game():
                 return True
         # if not in 9th inning or later, or no conditions met:
         return False
+
+    def clear_bases(self):
+        """
+        Removes all Players from the bases
+        """
+        self.__bases = [None, None, None]
+
+    def print_score(self):
+        """
+        Prints the current score in the Game
+        """
+        print(f"{self.__away_info['team'].get_name()} {self.__away_info['score']} @ {self.__home_info['team'].get_name()} {self.__home_info['score']}")
         
 
 # for testing purposes
