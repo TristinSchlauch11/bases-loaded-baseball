@@ -3,6 +3,49 @@ from Team import Team
 import Event as e
 
 class Game():
+
+    class Base():
+        """
+        Defines an inner class Bases that is used by the Game class to track baserunners and the
+        Pitchers responsible for putting them on base
+        """
+        def __init__(self):
+            self.__runner = None
+            self.__pitcher = None
+
+        def runner(self):
+            """
+            Returns the runner on this Base
+            """
+            return self.__runner
+        
+        def pitcher(self):
+            """
+            Returns the pitcher responsible for the runner on this Base
+            """
+            return self.__pitcher
+        
+        def get_on_base(self, runner, pitcher):
+            """
+            Puts the given runner on this base. The given pitcher is responsible for the runner
+            """
+            self.__runner = runner
+            self.__pitcher = pitcher
+
+        def advance_from(self, prev_base):
+            """
+            Moves the runner from the the prev_base to this one
+            """
+            self.__runner = prev_base.runner()
+            self.__pitcher = prev_base.pitcher()
+
+        def clear(self):
+            """
+            Removes any runner from the base
+            """
+            self.__runner = None
+            self.__pitcher = None
+
     def __init__(self, home, away):
         self.__outs = 0
         self.__inning = 1
