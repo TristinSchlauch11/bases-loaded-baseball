@@ -120,13 +120,14 @@ class Pitcher(Player):
         self.__hits = 0
         self.__BBs = 0
         self.__ERs = 0
-        self.__IP = 0
+        self.__outs = 0
         self.__TBF = 0
 
     def groundout(self):
         """
         Accumulates pitcher stats for a groundout
         """
+        self.__outs += 1
         self.__GOs += 1
         self.__TBF += 1
 
@@ -134,6 +135,7 @@ class Pitcher(Player):
         """
         Accumulates pitcher stats for an air out
         """
+        self.__outs += 1
         self.__AOs += 1
         self.__TBF += 1
 
@@ -141,6 +143,7 @@ class Pitcher(Player):
         """
         Accumulates pitcher stats for a strikeout
         """
+        self.__outs += 1
         self.__Ks += 1
         self.__TBF += 1
 
@@ -158,9 +161,30 @@ class Pitcher(Player):
         self.__BBs += 1
         self.__TBF += 1
 
+    def add_outs(self, outs):
+        """
+        Adds the given number of outs to the pitchers count
+        Used to add outs that are collected in ways not included in methods above
+        """
+        self.__outs += outs
+
+    def get_IP_calc(self):
+        """
+        Returns the number of innings the Pitcher has pitched
+        To be used in calculations for other statistics
+        """
+        return self.__outs / 3
+    
+    def get_IP_disp(self):
+        """
+        Returns the number of innings the Pitcher has pitched
+        To be used to display the IP statistic
+        """
+        return f"{self.__outs // 3}.{self.__outs % 3}"
+    
     def print_stats(self):
         """
         Prints the raw statistics of the Pitcher
         NEED TO UPDATE THIS METHOD LATER
         """
-        print(f"{self.get_last()}: {self.__GOs} GO, {self.__AOs} AO, {self.__Ks} K, {self.__hits} H, {self.__BBs} BB, {self.__TBF} TBF")
+        print(f"{self.get_last()}: {self.get_IP_disp()} IP, {self.__GOs} GO, {self.__AOs} AO, {self.__Ks} K, {self.__hits} H, {self.__BBs} BB, {self.__TBF} TBF")

@@ -71,8 +71,7 @@ class Game():
             print(f"Pitcher: {pit.get_last()}")
 
             # make next selection
-            # sel = input("\nEnter 'h' to hit, 's' to substitute, or 'q' to quit game >> ")
-            sel = "h"       # TESTING
+            sel = input("\nEnter 'h' to hit, 's' to substitute, or 'q' to quit game >> ")
 
             # execute next PA
             if sel == "h":
@@ -224,6 +223,7 @@ class Game():
                     print(f"{bat.get_last()} grounds into a double play")
                     print(f"{self.__bases[0].get_last()} out at 2nd")
                     self.__outs += 2
+                    pit.add_outs(1)
 
                     # if runner on 3rd and inning is not over, runner scores
                     if self.__bases[2] is not None and self.__outs != 3:
@@ -256,6 +256,7 @@ class Game():
                     print(f"{bat.get_last()} grounds into a double play")
                     print(f"{self.__bases[2].get_last()} out at home")
                     self.__outs += 2
+                    pit.add_outs(1)
 
                     # no runner will score
 

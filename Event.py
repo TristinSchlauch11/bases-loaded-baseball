@@ -128,8 +128,3 @@ def gidp(scenario):
             return 2
         else:
             return 1
-
-result_dict = {5:0, 4:0, 3:0, 2:0, 1:0}    
-for i in range(10000):
-    result_dict[gidp(3)] += 1
-print(result_dict)
