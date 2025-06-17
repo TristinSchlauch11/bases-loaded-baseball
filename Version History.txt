@@ -1,8 +1,19 @@
 Bases Loaded Baseball Version History
 
-Current Version: V0.5.0
+Current Version: V0.7.0
 
-V0.6.2 - implements methods to increment ER and IP (more details later)
+V0.8.0 - begins to implement the usage of SQL databases to store stats and other info
+    this will take a while to re-learn, then transition to this storage method
+
+V0.7.0 - implement a 'menu' that allows the user to play more than one game
+    still only using the Blue Jays and Swansons for now
+    will track stats over ALL games, not just the most recent one
+
+V0.6.3 - begin to implement some derived statistics, more to come later
+    includes AVG, OBP, SLG, OPS, XBH, TB for batters
+    includes BAA, OBP, WHIP, ERA, K/9, K/BB for pitchers
+
+V0.6.2 - implements methods to increment ER and IP
 
 V0.6.1 - implements the methods created in V0.6.0 to accumulate player stats over time
     will not increment ERs and IP yet

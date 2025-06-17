@@ -418,17 +418,28 @@ bluejays.add_pitcher(Pitcher("Yimi", "Garcia"), False)
 swansons = Team("Swansons")
 swansons.add_batter(Batter("Sherry", "Lee"))
 swansons.add_batter(Batter("Tanner", "Mergle"))
-swansons.add_batter(Batter("Teresa", "Three"))
+swansons.add_batter(Batter("Sam", "Goerz"))
 swansons.add_batter(Batter("Tristin", "Schlauch"))
 swansons.add_batter(Batter("Sungwoo", "Byun"))
 swansons.add_batter(Batter("William", "Blimke"))
 swansons.add_batter(Batter("Ryan", "Chan"))
 swansons.add_batter(Batter("Reed", "Drinkle"))
-swansons.add_batter(Batter("Jason", "Nine"))
+swansons.add_batter(Batter("Greg", "Livingood"))
 swansons.add_pitcher(Pitcher("Kris", "Clements"), True)
 
-g = Game(bluejays, swansons)
-g.play()
+finished = False
+while not finished:
+    g = Game(bluejays, swansons)
+    g.play()
+    while True:
+        choice = input("Would you like to play again? y/n >> ")
+        if choice == "y":   # play again
+            print("Playing again!")
+            break
+        if choice == "n":
+            finished = True
+            break
+        print("Please enter a valid option!")
 
 swansons.print_stats()
 bluejays.print_stats()
