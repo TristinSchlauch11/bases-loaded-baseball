@@ -1,7 +1,14 @@
 class Player():
-    def __init__(self, first, last):
+    def __init__(self, id, first, last):
+        self.__id = id
         self.__first = first
         self.__last = last
+
+    def get_id(self):
+        """
+        Returns the unique ID used to store their information in the SQL database
+        """
+        return self.__id
 
     def get_first(self):
         """
