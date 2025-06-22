@@ -26,8 +26,8 @@ class Batter(Player):
     """
     A subclass of Player, a Batter will only be able to hit and have batting methods
     """
-    def __init__(self, first, last):
-        super().__init__(first, last)
+    def __init__(self, id, first, last):
+        super().__init__(id, first, last)
         self.__hits = 0
         self.__2Bs = 0
         self.__3Bs = 0
@@ -38,75 +38,168 @@ class Batter(Player):
         self.__ABs = 0
         self.__PAs = 0
 
-    def single(self):
+    def base_hit(self, bases, cursor):
         """
-        Accumulates batter stats for a single
+        Updates the player stat database by accumulating batter stats for a base hit
+        cursor is the cursor for the SQL database
         """
-        self.__hits += 1
-        self.__ABs += 1
-        self.__PAs += 1
 
-    def double(self):
-        """
-        Accumulates batter stats for a double
-        """
-        self.__hits += 1
-        self.__2Bs += 1
-        self.__ABs += 1
-        self.__PAs += 1
+        # determine the hit type to accumulate
+        hit_message = "hits = hits + 1,"
+        if bases == 2:
+            hit_message += " doubles = doubles + 1,"
+        if bases == 3:
+            hit_message += " triples = triples + 1,"
+        if bases == 4:
+            hit_message += " homeruns = homeruns + 1, RBIs = RBIs + 1, runs = runs + 1,"
 
-    def triple(self):
-        """
-        Accumulates batter stats for a triple
-        """
-        self.__hits += 1
-        self.__3Bs += 1
-        self.__ABs += 1
-        self.__PAs += 1
+        # create SQL command
+        sql_command = f"""UPDATE bat_stats
+        SET {hit_message} ABs = ABs + 1, PAs = PAs + 1
+        WHERE player_id = '{self.get_id()}'"""
 
-    def homerun(self):
-        """
-        Accumulates batter stats for a home run
-        """
-        self.__hits += 1
-        self.__HRs += 1
-        self.__RBIs += 1
-        self.__runs += 1
-        self.__ABs += 1
-        self.__PAs += 1
+        # execute command
+        cursor.execute(sql_command)
+                
+    # def single(self):
+    #     """
+    #     Accumulates batter stats for a single
+    #     """
+    #     self.__hits += 1
+    #     self.__ABs += 1
+    #     self.__PAs += 1
 
-    def walk(self):
-        """
-        Accumulates batter stats for a walk
-        """
-        self.__BBs += 1
-        self.__PAs += 1
+    # def double(self):
+    #     """
+    #     Accumulates batter stats for a double
+    #     """
+    #     self.__hits += 1
+    #     self.__2Bs += 1
+    #     self.__ABs += 1
+    #     self.__PAs += 1
 
-    def out(self):
-        """
-        Accumulates batter stats for an out
-        """
-        self.__ABs += 1
-        self.__PAs += 1
+    # def triple(self):
+    #     """
+    #     Accumulates batter stats for a triple
+    #     """
+    #     self.__hits += 1
+    #     self.__3Bs += 1
+    #     self.__ABs += 1
+    #     self.__PAs += 1
 
-    def sacfly(self):
-        """
-        Accumulates batter stats for hitting a sacrifice fly
-        """
-        self.__PAs += 1
-        self.__RBIs += 1
+    # def homerun(self):
+    #     """
+    #     Accumulates batter stats for a home run
+    #     """
+    #     self.__hits += 1
+    #     self.__HRs += 1
+    #     self.__RBIs += 1
+    #     self.__runs += 1
+    #     self.__ABs += 1
+    #     self.__PAs += 1
 
-    def run(self):
+    def walk(self, cursor):
         """
-        Accumulates batter stats for scoring a run
+        Updates the player stat database by accumulating batter stats for a walk
+        cursor is the cursor for the SQL database
         """
-        self.__runs += 1
+    
+        # create SQL command
+        sql_command = f"""UPDATE bat_stats
+        SET walks = walks + 1, PAs = PAs + 1
+        WHERE player_id = '{self.get_id()}'"""
 
-    def RBI(self):
+        # execute command
+        cursor.execute(sql_command)
+
+    # def walk(self):
+    #     """
+    #     Accumulates batter stats for a walk
+    #     """
+    #     self.__BBs += 1
+    #     self.__PAs += 1
+
+    def out(self, cursor):
         """
-        Accumulates batter stats for getting an RBI
+        Updates the player stat database by accumulating batter stats for an out
+        cursor is the cursor for the SQL database
         """
-        self.__RBIs += 1
+    
+        # create SQL command
+        sql_command = f"""UPDATE bat_stats
+        SET ABs = ABs + 1, PAs = PAs + 1
+        WHERE player_id = '{self.get_id()}'"""
+
+        # execute command
+        cursor.execute(sql_command)
+
+    # def out(self):
+    #     """
+    #     Accumulates batter stats for an out
+    #     """
+    #     self.__ABs += 1
+    #     self.__PAs += 1
+
+    def sacfly(self, cursor):
+        """
+        Updates the player stat database by accumulating batter stats for a sacrifice fly
+        cursor is the cursor for the SQL database
+        """
+    
+        # create SQL command
+        sql_command = f"""UPDATE bat_stats
+        SET RBIs = RBIs + 1, PAs = PAs + 1
+        WHERE player_id = '{self.get_id()}'"""
+
+        # execute command
+        cursor.execute(sql_command)
+
+    # def sacfly(self):
+    #     """
+    #     Accumulates batter stats for hitting a sacrifice fly
+    #     """
+    #     self.__PAs += 1
+    #     self.__RBIs += 1
+
+    def run(self, cursor):
+        """
+        Updates the player stat database by accumulating batter stats for an out
+        cursor is the cursor for the SQL database
+        """
+    
+        # create SQL command
+        sql_command = f"""UPDATE bat_stats
+        SET runs = runs + 1
+        WHERE player_id = '{self.get_id()}'"""
+
+        # execute command
+        cursor.execute(sql_command)
+
+    # def run(self):
+    #     """
+    #     Accumulates batter stats for scoring a run
+    #     """
+    #     self.__runs += 1
+
+    def RBI(self, cursor):
+        """
+        Updates the player stat database by accumulating batter stats for an out
+        cursor is the cursor for the SQL database
+        """
+    
+        # create SQL command
+        sql_command = f"""UPDATE bat_stats
+        SET RBIs = RBIs + 1
+        WHERE player_id = '{self.get_id()}'"""
+
+        # execute command
+        cursor.execute(sql_command)
+
+    # def RBI(self):
+    #     """
+    #     Accumulates batter stats for getting an RBI
+    #     """
+    #     self.__RBIs += 1
 
     def get_avg(self):
         """
@@ -165,8 +258,8 @@ class Pitcher(Player):
     """
     A subclass of Player, a Pitcher will only be able to pitch and have pitching methods
     """
-    def __init__(self, first, last):
-        super().__init__(first, last)
+    def __init__(self, id, first, last):
+        super().__init__(id, first, last)
         self.__GOs = 0
         self.__AOs = 0
         self.__Ks = 0
