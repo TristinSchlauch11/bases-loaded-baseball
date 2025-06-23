@@ -60,43 +60,6 @@ class Batter(Player):
 
         # execute command
         cursor.execute(sql_command)
-                
-    # def single(self):
-    #     """
-    #     Accumulates batter stats for a single
-    #     """
-    #     self.__hits += 1
-    #     self.__ABs += 1
-    #     self.__PAs += 1
-
-    # def double(self):
-    #     """
-    #     Accumulates batter stats for a double
-    #     """
-    #     self.__hits += 1
-    #     self.__2Bs += 1
-    #     self.__ABs += 1
-    #     self.__PAs += 1
-
-    # def triple(self):
-    #     """
-    #     Accumulates batter stats for a triple
-    #     """
-    #     self.__hits += 1
-    #     self.__3Bs += 1
-    #     self.__ABs += 1
-    #     self.__PAs += 1
-
-    # def homerun(self):
-    #     """
-    #     Accumulates batter stats for a home run
-    #     """
-    #     self.__hits += 1
-    #     self.__HRs += 1
-    #     self.__RBIs += 1
-    #     self.__runs += 1
-    #     self.__ABs += 1
-    #     self.__PAs += 1
 
     def walk(self, cursor):
         """
@@ -112,13 +75,6 @@ class Batter(Player):
         # execute command
         cursor.execute(sql_command)
 
-    # def walk(self):
-    #     """
-    #     Accumulates batter stats for a walk
-    #     """
-    #     self.__BBs += 1
-    #     self.__PAs += 1
-
     def out(self, cursor):
         """
         Updates the player stat database by accumulating batter stats for an out
@@ -132,13 +88,6 @@ class Batter(Player):
 
         # execute command
         cursor.execute(sql_command)
-
-    # def out(self):
-    #     """
-    #     Accumulates batter stats for an out
-    #     """
-    #     self.__ABs += 1
-    #     self.__PAs += 1
 
     def sacfly(self, cursor):
         """
@@ -154,13 +103,6 @@ class Batter(Player):
         # execute command
         cursor.execute(sql_command)
 
-    # def sacfly(self):
-    #     """
-    #     Accumulates batter stats for hitting a sacrifice fly
-    #     """
-    #     self.__PAs += 1
-    #     self.__RBIs += 1
-
     def run(self, cursor):
         """
         Updates the player stat database by accumulating batter stats for an out
@@ -175,12 +117,6 @@ class Batter(Player):
         # execute command
         cursor.execute(sql_command)
 
-    # def run(self):
-    #     """
-    #     Accumulates batter stats for scoring a run
-    #     """
-    #     self.__runs += 1
-
     def RBI(self, cursor):
         """
         Updates the player stat database by accumulating batter stats for an out
@@ -194,12 +130,6 @@ class Batter(Player):
 
         # execute command
         cursor.execute(sql_command)
-
-    # def RBI(self):
-    #     """
-    #     Accumulates batter stats for getting an RBI
-    #     """
-    #     self.__RBIs += 1
 
     def get_avg(self):
         """

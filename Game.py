@@ -1,6 +1,7 @@
 from Player import Batter, Pitcher
 from Team import Team
 import Event as e
+import sqlite3
 
 class Game():
 
@@ -114,40 +115,40 @@ class Game():
             # single
             print(f"{bat.get_last()} singles")
             self.base_hit(1, bat, pit)
-            bat.single()
+            bat.base_hit(1, cursor)
             pit.hit()
 
         elif result == 2:
             # double
             print(f"{bat.get_last()} doubles")
             self.base_hit(2, bat, pit)
-            bat.double()
+            bat.base_hit(2, cursor)
             pit.hit()
 
         elif result == 3:
             # triple
             print(f"{bat.get_last()} triples")
             self.base_hit(3, bat, pit)
-            bat.triple()
+            bat.base_hit(3, cursor)
             pit.hit()
 
         elif result == 4:
             # home run
             print(f"{bat.get_last()} hits a home run!")
             self.base_hit(4, bat, pit)
-            bat.homerun()
+            bat.base_hit(4, cursor)
             pit.hit()
 
         elif result == 5:
             # walk
             print(f"{bat.get_last()} walks")
-            bat.walk()
+            bat.walk(cursor)
             pit.walk()
 
             # if bases are loaded, score a run and advance all runners
             if self.bases_loaded():
                 self.score_runner(self.__bases[2])
-                bat.RBI()
+                bat.RBI(cursor)
                 self.print_score()
                 for i in range(2, 0, -1):
                     self.__bases[i].advance(self.__bases[i-1])
@@ -165,12 +166,12 @@ class Game():
             # strikeout
             print(f"{bat.get_last()} strikes out!")
             self.__outs += 1
-            bat.out()
+            bat.out(cursor)
             pit.strikeout()
 
         elif result == 7:
             # ground out
-            bat.out()
+            bat.out(cursor)
             pit.groundout()
 
             # determine if a double play is possible
@@ -193,7 +194,7 @@ class Game():
                     # inning can't end in this scenario, so don't need to check it
                     if not self.__bases[2].is_empty():
                         self.score_runner(self.__bases[2])
-                        bat.RBI()
+                        bat.RBI(cursor)
                         self.print_score()
 
                     # advance other runners
@@ -211,7 +212,7 @@ class Game():
                     # inning can't end in this scenario, so don't need to check it
                     if not self.__bases[2].is_empty():
                         self.score_runner(self.__bases[2])
-                        bat.RBI()
+                        bat.RBI(cursor)
                         self.print_score()
 
                     # advance other runners
@@ -276,7 +277,7 @@ class Game():
             # determine if there is a sac fly
             if self.__outs < 2 and not self.__bases[2].is_empty() and e.sf() == 1:
                 print(f"{bat.get_last()} hits a sacrifice fly")
-                bat.sacfly()
+                bat.sacfly(cursor)
                 self.score_runner(self.__bases[2])
                 self.print_score()
                 self.__bases[2].clear()
@@ -284,7 +285,7 @@ class Game():
             # no sac fly
             else:
                 print(f"{bat.get_last()} flies out")
-                bat.out()
+                bat.out(cursor)
             
             # in both cases
             self.__outs += 1
@@ -301,7 +302,7 @@ class Game():
         for i in range(2, max(2 - num_bases, -1), -1):
             if not self.__bases[i].is_empty():
                 self.score_runner(self.__bases[i])
-                bat.RBI()
+                bat.RBI(cursor)
                 runs_scored = True
 
         # update runners already on bases
@@ -332,7 +333,7 @@ class Game():
         self.__batting["score"] += 1
         if base.pitcher() is not None:
             base.pitcher().earned_run()
-        base.runner().run()
+        base.runner().run(cursor)
 
     def update_inning(self):
         """
@@ -427,6 +428,9 @@ swansons.add_batter(Batter("reedri1", "Reed", "Drinkle"))
 swansons.add_batter(Batter("greliv1", "Greg", "Livingood"))
 swansons.add_pitcher(Pitcher("kricle1", "Kris", "Clements"), True)
 
+conn = sqlite3.connect("player_stats.db")
+cursor = conn.cursor()
+
 finished = False
 while not finished:
     g = Game(bluejays, swansons)
@@ -440,6 +444,9 @@ while not finished:
             finished = True
             break
         print("Please enter a valid option!")
+
+conn.commit()
+conn.close()
 
 swansons.print_stats()
 bluejays.print_stats()
