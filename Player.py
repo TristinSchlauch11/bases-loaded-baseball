@@ -171,7 +171,7 @@ class Batter(Player):
         """
         return self.__2Bs + self.__3Bs + self.__HRs
     
-    def get_xbh(self):
+    def get_tb(self):
         """
         Returns an integer value of the total bases (TB) of the Batter
         """
@@ -199,56 +199,105 @@ class Pitcher(Player):
         self.__outs = 0
         self.__TBF = 0
 
-    def groundout(self):
+    def groundout(self, cursor):
         """
-        Accumulates pitcher stats for a groundout
+        Updates the player stat database by accumulating pitcher stats for a groundout
+        cursor is the cursor for the SQL database
         """
-        self.__outs += 1
-        self.__GOs += 1
-        self.__TBF += 1
-
-    def airout(self):
-        """
-        Accumulates pitcher stats for an air out
-        """
-        self.__outs += 1
-        self.__AOs += 1
-        self.__TBF += 1
-
-    def strikeout(self):
-        """
-        Accumulates pitcher stats for a strikeout
-        """
-        self.__outs += 1
-        self.__Ks += 1
-        self.__TBF += 1
-
-    def hit(self):
-        """
-        Accumulates pitcher stats for a hit
-        """
-        self.__hits += 1
-        self.__TBF += 1
-
-    def walk(self):
-        """
-        Accumulates pitcher stats for a walk
-        """
-        self.__BBs += 1
-        self.__TBF += 1
-
-    def add_outs(self, outs):
-        """
-        Adds the given number of outs to the pitchers count
-        Used to add outs that are collected in ways not included in methods above
-        """
-        self.__outs += outs
     
-    def earned_run(self):
+        # create SQL command
+        sql_command = f"""UPDATE pit_stats
+        SET outs = outs + 1, groundouts = groundouts + 1, TBF = TBF + 1
+        WHERE player_id = '{self.get_id()}'"""
+
+        # execute command
+        cursor.execute(sql_command)
+
+    def airout(self, cursor):
         """
-        Adds an earned run to the pitchers count
+        Updates the player stat database by accumulating pitcher stats for an air out
+        cursor is the cursor for the SQL database
         """
-        self.__ERs += 1
+    
+        # create SQL command
+        sql_command = f"""UPDATE pit_stats
+        SET outs = outs + 1, airouts = airouts + 1, TBF = TBF + 1
+        WHERE player_id = '{self.get_id()}'"""
+
+        # execute command
+        cursor.execute(sql_command)
+
+    def strikeout(self, cursor):
+        """
+        Updates the player stat database by accumulating pitcher stats for a strikeout
+        cursor is the cursor for the SQL database
+        """
+    
+        # create SQL command
+        sql_command = f"""UPDATE pit_stats
+        SET outs = outs + 1, strikeouts = strikeouts + 1, TBF = TBF + 1
+        WHERE player_id = '{self.get_id()}'"""
+
+        # execute command
+        cursor.execute(sql_command)
+
+    def hit(self, cursor):
+        """
+        Updates the player stat database by accumulating pitcher stats for a hit
+        cursor is the cursor for the SQL database
+        """
+    
+        # create SQL command
+        sql_command = f"""UPDATE pit_stats
+        SET hits = hits + 1, TBF = TBF + 1
+        WHERE player_id = '{self.get_id()}'"""
+
+        # execute command
+        cursor.execute(sql_command)
+
+    def walk(self, cursor):
+        """
+        Updates the player stat database by accumulating pitcher stats for a walk
+        cursor is the cursor for the SQL database
+        """
+    
+        # create SQL command
+        sql_command = f"""UPDATE pit_stats
+        SET walks = walks + 1, TBF = TBF + 1
+        WHERE player_id = '{self.get_id()}'"""
+
+        # execute command
+        cursor.execute(sql_command)
+
+    def add_outs(self, outs, cursor):
+        """
+        Updates the player stat database by adding the given number of outs to the pitchers count
+        Used to add outs that are collected in ways not included in methods above
+        cursor is the cursor for the SQL database
+        """
+    
+        # create SQL command
+        sql_command = f"""UPDATE pit_stats
+        SET outs = outs + {outs}
+        WHERE player_id = '{self.get_id()}'"""
+
+        # execute command
+        cursor.execute(sql_command)
+    
+    def earned_run(self, cursor):
+        """
+        Updates the player stat database by adding an earned run to the pitchers count
+        Used to add outs that are collected in ways not included in methods above
+        cursor is the cursor for the SQL database
+        """
+    
+        # create SQL command
+        sql_command = f"""UPDATE pit_stats
+        SET ERs = ERs + 1
+        WHERE player_id = '{self.get_id()}'"""
+
+        # execute command
+        cursor.execute(sql_command)
 
     def get_IP_calc(self):
         """

@@ -116,34 +116,34 @@ class Game():
             print(f"{bat.get_last()} singles")
             self.base_hit(1, bat, pit)
             bat.base_hit(1, cursor)
-            pit.hit()
+            pit.hit(cursor)
 
         elif result == 2:
             # double
             print(f"{bat.get_last()} doubles")
             self.base_hit(2, bat, pit)
             bat.base_hit(2, cursor)
-            pit.hit()
+            pit.hit(cursor)
 
         elif result == 3:
             # triple
             print(f"{bat.get_last()} triples")
             self.base_hit(3, bat, pit)
             bat.base_hit(3, cursor)
-            pit.hit()
+            pit.hit(cursor)
 
         elif result == 4:
             # home run
             print(f"{bat.get_last()} hits a home run!")
             self.base_hit(4, bat, pit)
             bat.base_hit(4, cursor)
-            pit.hit()
+            pit.hit(cursor)
 
         elif result == 5:
             # walk
             print(f"{bat.get_last()} walks")
             bat.walk(cursor)
-            pit.walk()
+            pit.walk(cursor)
 
             # if bases are loaded, score a run and advance all runners
             if self.bases_loaded():
@@ -167,12 +167,12 @@ class Game():
             print(f"{bat.get_last()} strikes out!")
             self.__outs += 1
             bat.out(cursor)
-            pit.strikeout()
+            pit.strikeout(cursor)
 
         elif result == 7:
             # ground out
             bat.out(cursor)
-            pit.groundout()
+            pit.groundout(cursor)
 
             # determine if a double play is possible
             if self.__outs < 2 and not self.__bases[0].is_empty():
@@ -225,7 +225,7 @@ class Game():
                     print(f"{bat.get_last()} grounds into a double play")
                     print(f"{self.__bases[0].runner().get_last()} out at 2nd")
                     self.__outs += 2
-                    pit.add_outs(1)
+                    pit.add_outs(1, cursor)
 
                     # if runner on 3rd and inning is not over, runner scores
                     if not self.__bases[2].is_empty() and self.__outs != 3:
@@ -256,7 +256,7 @@ class Game():
                     print(f"{bat.get_last()} grounds into a double play")
                     print(f"{self.__bases[2].runner().get_last()} out at home")
                     self.__outs += 2
-                    pit.add_outs(1)
+                    pit.add_outs(1, cursor)
 
                     # no runner will score
 
@@ -272,7 +272,7 @@ class Game():
 
         elif result == 8:
             # fly out
-            pit.airout()
+            pit.airout(cursor)
 
             # determine if there is a sac fly
             if self.__outs < 2 and not self.__bases[2].is_empty() and e.sf() == 1:
@@ -314,7 +314,7 @@ class Game():
             self.__bases[num_bases - 1].get_on_base(bat, pit)
         else:
             self.__batting["score"] += 1
-            pit.earned_run()
+            pit.earned_run(cursor)
             runs_scored = True
         
         # set other bases to empty
@@ -332,7 +332,7 @@ class Game():
         print(f"{base.runner().get_last()} scores!")
         self.__batting["score"] += 1
         if base.pitcher() is not None:
-            base.pitcher().earned_run()
+            base.pitcher().earned_run(cursor)
         base.runner().run(cursor)
 
     def update_inning(self):
