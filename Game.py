@@ -1,5 +1,3 @@
-from Player import Batter, Pitcher
-from Team import Team
 import Event as e
 import sqlite3
 
@@ -399,34 +397,6 @@ class Game():
         Prints the current score in the Game
         """
         print(f"{self.__away_info['team'].get_name()} {self.__away_info['score']} @ {self.__home_info['team'].get_name()} {self.__home_info['score']}")
-        
-
-# for testing purposes
-bluejays = Team("Blue Jays")
-bluejays.add_batter(Batter("alekir1", "Alejandro", "Kirk"))
-bluejays.add_batter(Batter("vlague1", "Vladamir", "Guerrero Jr."))
-bluejays.add_batter(Batter("andgim1", "Andres", "Gimenez"))
-bluejays.add_batter(Batter("bobic1", "Bo", "Bichette"))
-bluejays.add_batter(Batter("erncle1", "Ernie", "Clement"))
-bluejays.add_batter(Batter("davsch1", "Davis", "Schneider"))
-bluejays.add_batter(Batter("dauvar1", "Daulton", "Varsho"))
-bluejays.add_batter(Batter("geospr1", "George", "Springer"))
-bluejays.add_batter(Batter("antsan1", "Anthony", "Santander"))
-bluejays.add_pitcher(Pitcher("josber1", "Jose", "Berrios"), True)
-bluejays.add_pitcher(Pitcher("jefhof1", "Jeff", "Hoffman"), False)
-bluejays.add_pitcher(Pitcher("yimgar1", "Yimi", "Garcia"), False)
-
-swansons = Team("Swansons")
-swansons.add_batter(Batter("shelee1", "Sherry", "Lee"))
-swansons.add_batter(Batter("tanmer1", "Tanner", "Mergle"))
-swansons.add_batter(Batter("samgoe1", "Sam", "Goerz"))
-swansons.add_batter(Batter("trisch1", "Tristin", "Schlauch"))
-swansons.add_batter(Batter("sunbyu1", "Sungwoo", "Byun"))
-swansons.add_batter(Batter("wilbli1", "William", "Blimke"))
-swansons.add_batter(Batter("ryacha1", "Ryan", "Chan"))
-swansons.add_batter(Batter("reedri1", "Reed", "Drinkle"))
-swansons.add_batter(Batter("greliv1", "Greg", "Livingood"))
-swansons.add_pitcher(Pitcher("kricle1", "Kris", "Clements"), True)
 
 conn = sqlite3.connect("player_stats.db")
 cursor = conn.cursor()

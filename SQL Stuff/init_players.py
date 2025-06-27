@@ -1,11 +1,12 @@
 import sqlite3
 
+# connect to DB and make cursor
 conn = sqlite3.connect("C:/Users/nmbr1/OneDrive/Documents/bases-loaded-baseball/player_stats.db")
 cursor = conn.cursor()
 
 # delete tables to reset them
-cursor.execute("DROP TABLE bat_stats")
-cursor.execute("DROP TABLE pit_stats")
+cursor.execute("DROP TABLE bat_stats;")
+cursor.execute("DROP TABLE pit_stats;")
 
 # create table for batter stats
 comm = """CREATE TABLE bat_stats (

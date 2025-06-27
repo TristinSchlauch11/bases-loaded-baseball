@@ -1,7 +1,14 @@
 Bases Loaded Baseball Version History
 
-Current Version: V0.7.0
+Current Version: V0.8.0
 
+V0.8.1 - create a dedicated menu script that gives the user two options:
+    1. Play a Game - select two teams to play a game
+    2. View Team Stats - view the statistics of a selected team
+    
+    still only uses Blue Jays and Swansons
+    create a database that can store team info -- no stats in this DB yet
+    
 V0.8.0 - begins to implement the usage of SQL databases to store stats and other info
     this will take a while to re-learn, then transition to this storage method
 
