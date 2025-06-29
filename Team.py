@@ -1,11 +1,31 @@
-from Player import Player
+from Player import Player, Batter, Pitcher
 
 class Team():
-    def __init__(self, name):
+    def __init__(self, code, loc, name, cursor):
+        self.__code = code
+        self.__location = loc
         self.__name = name
         self.__lineup = []
         self.__rotation = []
         self.__bullpen = []
+        self.init_players(cursor)
+
+    def init_players(self, cursor):
+        """
+        Initializes and adds all Player objects to the Team
+        Used when the Team is queried from the database to play a game
+        """
+        # get batters
+        cursor.execute(f"SELECT player_id, fname, lname FROM bat_stats WHERE team = '{self.get_code()}';")
+        batters = cursor.fetchall()
+        for (b_id, first, last) in batters:
+            self.add_batter(Batter(b_id, first, last))
+
+        # get pitchers
+        cursor.execute(f"SELECT player_id, fname, lname, is_sp FROM pit_stats WHERE team = '{self.get_code()}';")
+        pitchers = cursor.fetchall()
+        for (p_id, first, last, is_sp) in pitchers:
+            self.add_pitcher(Pitcher(p_id, first, last), is_sp)
 
     def get_name(self):
         """
@@ -13,6 +33,12 @@ class Team():
         """
         return self.__name
     
+    def get_code(self):
+        """
+        Returns the Team's code
+        """
+        return self.__code
+        
     # may not need
     def print_bullpen(self):
         """

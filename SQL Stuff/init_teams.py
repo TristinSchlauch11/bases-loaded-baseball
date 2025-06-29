@@ -11,7 +11,7 @@ cursor.execute("DROP TABLE teams;")
 comm = """CREATE TABLE teams (
 team_code VARCHAR(3) PRIMARY KEY,
 location VARCHAR(15),
-name VARCHAR(18));"""
+name VARCHAR(18) NOT NULL);"""
 
 cursor.execute(comm)
 

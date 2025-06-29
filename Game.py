@@ -1,6 +1,9 @@
 import Event as e
 import sqlite3
 
+conn = sqlite3.connect("player_stats.db")
+cursor = conn.cursor()
+
 class Game():
 
     class Base():
@@ -101,6 +104,8 @@ class Game():
             self.__over = self.check_game()
             if not self.__over and self.__outs == 3:
                 self.update_inning()
+
+        conn.commit()
         self.print_score()
 
     def plate_app(self, bat, pit):
@@ -397,26 +402,3 @@ class Game():
         Prints the current score in the Game
         """
         print(f"{self.__away_info['team'].get_name()} {self.__away_info['score']} @ {self.__home_info['team'].get_name()} {self.__home_info['score']}")
-
-conn = sqlite3.connect("player_stats.db")
-cursor = conn.cursor()
-
-finished = False
-while not finished:
-    g = Game(bluejays, swansons)
-    g.play()
-    while True:
-        choice = input("Would you like to play again? y/n >> ")
-        if choice == "y":   # play again
-            print("Playing again!")
-            break
-        if choice == "n":
-            finished = True
-            break
-        print("Please enter a valid option!")
-
-conn.commit()
-conn.close()
-
-swansons.print_stats()
-bluejays.print_stats()
