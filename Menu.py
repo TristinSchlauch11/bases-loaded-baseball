@@ -63,9 +63,9 @@ while not done:
             print("Game not started, returning to main menu")
 
     elif sel == "2":
-        # select a team, then display stats of players
-        # can also view a list of all teams if needed
-        pass
+        # select a team, then print the stats of all players
+        team = select_team()
+        team.print_stats(cursor)
 
     elif sel == "3":
         # quit game, confirm that the user wants to quit the game

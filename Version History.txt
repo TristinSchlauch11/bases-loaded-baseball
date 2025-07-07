@@ -1,6 +1,8 @@
 Bases Loaded Baseball Version History
 
-Current Version: V0.8.0
+Current Version: V0.8.1
+
+V0.8.2 - use web scraping techniques to add all MLB teams and players to databases
 
 V0.8.1 - create a dedicated menu script that gives the user two options:
     1. Play a Game - select two teams to play a game

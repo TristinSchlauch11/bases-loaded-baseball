@@ -177,12 +177,21 @@ class Batter(Player):
         """
         return self.__hits + self.__2Bs * 2 + self.__3Bs * 3 + self.__HRs * 4
 
-    def print_stats(self):
+    def print_stats(self, cursor):
         """
         Prints the raw stats of the Batter
-        NEED TO EDIT THIS METHOD LATER
         """
-        print(f"{self.get_last()}: {self.__hits} H, {self.__2Bs} 2B, {self.__3Bs} 3B, {self.__HRs} HR, {self.__BBs} BB, {self.__runs} R, {self.__RBIs} RBI, {self.__ABs} AB, {self.__PAs} PA")
+        # get stats from table
+        comm = f"""SELECT lname, hits, doubles, triples, homeruns, walks, runs, RBIs, ABs, PAs
+        FROM bat_stats
+        WHERE player_id = '{self.get_id()}';"""
+        cursor.execute(comm)
+
+        # unpack stats
+        (name, h, dbls, tpls, hr, bb, r, rbi, ab, pa) = cursor.fetchone()
+
+        # display stats
+        print(f"{name}: {h} H, {dbls} 2B, {tpls} 3B, {hr} HR, {bb} BB, {r} R, {rbi} RBI, {ab} AB, {pa} PA")
 
 class Pitcher(Player):
     """
@@ -299,19 +308,29 @@ class Pitcher(Player):
         # execute command
         cursor.execute(sql_command)
 
-    def get_IP_calc(self):
+    def get_IP_calc(self, cursor):
         """
         Returns the number of innings the Pitcher has pitched
         To be used in calculations for other statistics
         """
-        return self.__outs / 3
+        # query required stats
+        cursor.execute(f"SELECT outs FROM pit_stats WHERE player_id = '{self.get_id()}'")
+        (outs, ) = cursor.fetchone()
+
+        # return desired stat
+        return outs / 3
     
-    def get_IP_disp(self):
+    def get_IP_disp(self, cursor):
         """
         Returns the number of innings the Pitcher has pitched
         To be used to display the IP statistic
         """
-        return f"{self.__outs // 3}.{self.__outs % 3}"
+        # query required stats
+        cursor.execute(f"SELECT outs FROM pit_stats WHERE player_id = '{self.get_id()}'")
+        (outs, ) = cursor.fetchone()
+
+        # return desired stat
+        return f"{outs // 3}.{outs % 3}"
     
     def get_baa(self):
         """
@@ -367,9 +386,18 @@ class Pitcher(Player):
             return 0.0
         return self.__Ks / self.__BBs
 
-    def print_stats(self):
+    def print_stats(self, cursor):
         """
         Prints the raw statistics of the Pitcher
-        NEED TO UPDATE THIS METHOD LATER
         """
-        print(f"{self.get_last()}: {self.get_IP_disp()} IP, {self.__ERs} ER, {self.__GOs} GO, {self.__AOs} AO, {self.__Ks} K, {self.__hits} H, {self.__BBs} BB, {self.__TBF} TBF")
+        # get stats from table
+        comm = f"""SELECT lname, groundouts, airouts, strikeouts, hits, walks, ERs, TBF
+        FROM pit_stats
+        WHERE player_id = '{self.get_id()}';"""
+        cursor.execute(comm)
+
+        # unpack stats
+        (name, go, ao, k, h, bb, er, tbf) = cursor.fetchone()
+
+        # display stats
+        print(f"{name}: {self.get_IP_disp(cursor)} IP, {er} ER, {go} GO, {ao} AO, {k} K, {h} H, {bb} BB, {tbf} TBF")

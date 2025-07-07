@@ -5,11 +5,11 @@ conn = sqlite3.connect("C:/Users/nmbr1/OneDrive/Documents/bases-loaded-baseball/
 cursor = conn.cursor()
 
 # delete tables to reset them
-cursor.execute("DROP TABLE Bat_stats;")
-cursor.execute("DROP TABLE Pit_stats;")
+cursor.execute("DROP TABLE bat_stats;")
+cursor.execute("DROP TABLE pit_stats;")
 
 # create table for batter stats
-comm = """CREATE TABLE Bat_stats (
+comm = """CREATE TABLE bat_stats (
 player_id VARCHAR(8) PRIMARY KEY,
 team VARCHAR(3),
 fname VARCHAR(12) NOT NULL,
@@ -28,7 +28,7 @@ FOREIGN KEY (team) REFERENCES Teams(team_code));"""
 cursor.execute(comm)
 
 # add batters to table
-comm = """INSERT INTO Bat_stats (player_id, fname, lname, team) VALUES
+comm = """INSERT INTO bat_stats (player_id, fname, lname, team) VALUES
 ('alekir1', 'Alejandro', 'Kirk', 'TOR'),
 ('vlague1', 'Vladamir', 'Guerrero Jr.', 'TOR'),
 ('andgim1', 'Andres', 'Gimenez', 'TOR'),
@@ -51,7 +51,7 @@ comm = """INSERT INTO Bat_stats (player_id, fname, lname, team) VALUES
 cursor.execute(comm)
 
 # create table for pitcher stats
-comm = """CREATE TABLE Pit_stats (
+comm = """CREATE TABLE pit_stats (
 player_id VARCHAR(8) PRIMARY KEY,
 team VARCHAR(3),
 fname VARCHAR(12) NOT NULL,
@@ -70,7 +70,7 @@ FOREIGN KEY (team) REFERENCES Teams(team_code));"""
 cursor.execute(comm)
 
 # add pitchers to table
-comm = """INSERT INTO Pit_stats (player_id, fname, lname, team, is_sp) VALUES
+comm = """INSERT INTO pit_stats (player_id, fname, lname, team, is_sp) VALUES
 ('josber1', 'Jose', 'Berrios', 'TOR', 1),
 ('jefhof1', 'Jeff', 'Hoffman', 'TOR', 0),
 ('yimgar1', 'Yimi', 'Garcia', 'TOR', 0),

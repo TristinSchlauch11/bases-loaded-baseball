@@ -10,4 +10,4 @@ Resolved - V0.4.0 Notes: I am implementing this dictionary now. It will be put i
 V0.5.0 Notes: I might need to brush up on some "official rulings" in regards to how groundouts, air outs, etc. get counted
 V0.6.0 Notes: Should I completely abolish the hitter/pitcher viewpoint? What's stopping any pitcher from hitting (or position players from pitching)?
 Is there a way that I can combine the single/double/triple/homerun methods and/or the groundout/airout/strikeout methods? They share a lot of the same accumulation methods and could do something similar to the gidp function in Events
-V0.7.0 Notes: I will need a more official Menu class as opposed to the loop that is currently implemented in the Game class. For now, the loop functions fine since there are only two teams playing
+Resolved - V0.7.0 Notes: I will need a more official Menu class as opposed to the loop that is currently implemented in the Game class. For now, the loop functions fine since there are only two teams playing

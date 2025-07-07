@@ -114,9 +114,9 @@ class Team():
         else:
             self.__bullpen.append(pit)
 
-    def print_stats(self):
+    def print_stats(self, cursor):
         print(f"{self.get_name()} Stats")
         for batter in self.__lineup:
-            batter.print_stats()
+            batter.print_stats(cursor)
         for pitcher in self.__rotation:
-            pitcher.print_stats()
+            pitcher.print_stats(cursor)
