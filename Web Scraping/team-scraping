@@ -1,0 +1,91 @@
+# This file was created to scrape the Baseball Reference webpage to collect all
+# necessary information for the team database. It makes use of scrapy to scrape
+# the websites, then attempts to automatically assign the data to the team's name
+# and location. Can manually modify this if needed.
+
+import time
+import scrapy
+from scrapy.crawler import CrawlerProcess
+import sqlite3
+
+class BaseballSpider(scrapy.Spider):
+
+    name = "baseball-spider"
+
+    def start_requests(self):
+        url = "https://www.baseball-reference.com/"
+        yield scrapy.Request(url=url, callback=self.parse_lg)
+    
+    def parse_lg(self, response):
+        tables_css = ["table#standings_AL", "table#standings_NL"]
+        for css_loc in tables_css:
+            table = response.css(css_loc)
+            elems = table.xpath(".//th[@data-stat='team_ID']/a")
+            for elem in elems:
+                time.sleep(0.5)
+                code = elem.xpath("./text()").extract_first()
+                name = elem.xpath("./@title").extract_first()
+                all_codes.append(code)
+                all_names.append(name)
+
+# collect all team codes and team names
+all_codes = []
+all_names = []
+
+process = CrawlerProcess()
+process.crawl(BaseballSpider)
+process.start()
+
+# begin inserting these teams into database
+conn = sqlite3.connect("C:/Users/nmbr1/OneDrive/Documents/bases-loaded-baseball/player_stats.db")
+cursor = conn.cursor()
+
+# delete table to reset them
+cursor.execute("DROP TABLE teams;")
+
+# create table for teams
+comm = """CREATE TABLE teams (
+team_code VARCHAR(3) PRIMARY KEY,
+location VARCHAR(15),
+name VARCHAR(18) NOT NULL);"""
+
+cursor.execute(comm)
+
+# add teams into database
+while len(all_codes) > 0:
+    # attempt to automatically identify information
+    code = all_codes.pop().strip()
+    team = all_names.pop()
+    try:
+        [loc, name] = team.split(maxsplit=1)
+        loc, name = loc.strip(), name.strip()
+    except ValueError:  # for Athletics
+        name = team.strip()
+        loc = ""
+
+    # print info
+    print("\nAbout to add the following entry:")
+    print(f"Code: {code}")
+    print(f"Team: {loc}")
+    print(f"Name: {name}")
+        
+    # ask if correct
+    confirmed = False
+    while not confirmed:
+        print("\nIs this correct?")
+        sel = input ("Type 'y' for yes, or 'n' for no >> ")
+        if sel == "y":
+            confirmed = True
+        elif sel == "n":    # correct the information if needed
+            [loc, name] = team.rsplit(maxsplit=1)
+            loc, name = loc.strip(), name.strip()
+            confirmed = True
+        else:
+            print("Please type 'y' or 'n'.")
+    
+    # add the team
+    cursor.execute(f"INSERT INTO teams VALUES ('{code}', '{loc}', '{name}');")
+    print(f"{name} added.")
+    
+conn.commit()
+conn.close()
