@@ -13,24 +13,50 @@ class BaseballSpider(scrapy.Spider):
     name = "baseball-spider"
 
     def start_requests(self):
-        url = "https://www.baseball-reference.com/"
-        yield scrapy.Request(url=url, callback=self.parse_lg)
+        url = "https://www.baseball-reference.com/leagues/majors/2025.shtml"
+        yield scrapy.Request(url=url, callback=self.parse_league)
     
-    def parse_lg(self, response):
-        tables_css = ["table#standings_AL", "table#standings_NL"]
-        for css_loc in tables_css:
-            table = response.css(css_loc)
-            elems = table.xpath(".//th[@data-stat='team_ID']/a")
-            for elem in elems:
-                time.sleep(0.5)
-                code = elem.xpath("./text()").extract_first()
-                name = elem.xpath("./@title").extract_first()
-                all_codes.append(code)
-                all_names.append(name)
+    def parse_league(self, response):
+        table = response.css("table#teams_standard_batting")
+        elems = table.xpath("./tbody[1]//th[@data-stat='team_name']/a")
+        all_names.extend(elems.xpath("./text()").extract())
+        links = elems.xpath("./@href").extract()
+        for link in links:
+            time.sleep(1)
+            team_code = link.split("/")[2]
+            all_codes.append(team_code)
+            yield response.follow(url = link, callback = self.parse_teams, cb_kwargs = dict(code=team_code))
+
+    def parse_teams(self, response, code):
+        # get batters 
+        time.sleep(1)
+        table = response.css("table#players_standard_batting")
+        trs = table.xpath("./tbody/tr[position() < 10]")
+        tds = trs.xpath("./td[@data-stat='name_display']")
+        ids = tds.xpath("./@data-append-csv").extract()
+        names = tds.xpath("./a/text()").extract()
+        positions = trs.xpath("./td[@data-stat='team_position']/strong/text()").extract()
+        
+        # get pitchers
+        table = response.css("table#players_standard_pitching")
+        trs = table.xpath("./tbody/tr")
+        for tr in trs:
+            if len(tr.xpath(".//strong")) > 0:
+                td = tr.xpath("./td[@data-stat='name_display']")
+                id = td.xpath("./@data-append-csv").extract_first()
+                name = td.xpath("./a/text()").extract_first()
+                pos = tr.xpath("./td[@data-stat='team_position']/strong/text()").extract_first()
+                ids.append(id)
+                names.append(name)
+                positions.append(pos)
+        
+        # add information
+        player_dict[code] = {"ids" : ids, "names": names, "positions":positions}
 
 # collect all team codes and team names
 all_codes = []
 all_names = []
+player_dict = dict()
 
 process = CrawlerProcess()
 process.crawl(BaseballSpider)
@@ -54,8 +80,8 @@ cursor.execute(comm)
 # add teams into database
 while len(all_codes) > 0:
     # attempt to automatically identify information
-    code = all_codes.pop().strip()
-    team = all_names.pop()
+    code = all_codes.pop(0).strip()
+    team = all_names.pop(0)
     try:
         [loc, name] = team.split(maxsplit=1)
         loc, name = loc.strip(), name.strip()
@@ -89,3 +115,13 @@ while len(all_codes) > 0:
     
 conn.commit()
 conn.close()
+
+# test the dictionary
+for code in player_dict:
+    players = player_dict[code]
+    while len(players["ids"]) > 0:
+        id = players["ids"].pop(0)
+        name = players["names"].pop(0)
+        pos = players["positions"].pop(0)
+        first, last = name.split(maxsplit=1)
+        print(f"{code} | {id:9} | {pos:2} | {first.strip()} {last.strip()}")

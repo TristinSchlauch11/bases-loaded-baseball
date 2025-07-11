@@ -11,3 +11,4 @@ V0.5.0 Notes: I might need to brush up on some "official rulings" in regards to 
 V0.6.0 Notes: Should I completely abolish the hitter/pitcher viewpoint? What's stopping any pitcher from hitting (or position players from pitching)?
 Is there a way that I can combine the single/double/triple/homerun methods and/or the groundout/airout/strikeout methods? They share a lot of the same accumulation methods and could do something similar to the gidp function in Events
 Resolved - V0.7.0 Notes: I will need a more official Menu class as opposed to the loop that is currently implemented in the Game class. For now, the loop functions fine since there are only two teams playing
+V0.8.2 Notes: After creating the web scraping files, I might not need the init_players or teams .py files. Consider removing these in the future if they have no usage
