@@ -112,16 +112,75 @@ while len(all_codes) > 0:
     # add the team
     cursor.execute(f"INSERT INTO teams VALUES ('{code}', '{loc}', '{name}');")
     print(f"{name} added.")
+
+conn.commit()
     
+# begin inserting these players into database
+
+# delete tables to reset them
+cursor.execute("DROP TABLE bat_stats;")
+cursor.execute("DROP TABLE pit_stats;")
+
+# create table for batters
+comm = """CREATE TABLE bat_stats (
+player_id VARCHAR(8) PRIMARY KEY,
+team VARCHAR(3),
+fname VARCHAR(12) NOT NULL,
+lname VARCHAR(20) NOT NULL,
+hits INTEGER DEFAULT 0,
+doubles INTEGER DEFAULT 0,
+triples INTEGER DEFAULT 0,
+homeruns INTEGER DEFAULT 0,
+walks INTEGER DEFAULT 0,
+runs INTEGER DEFAULT 0,
+RBIs INTEGER DEFAULT 0,
+ABs INTEGER DEFAULT 0,
+PAs INTEGER DEFAULT 0,
+FOREIGN KEY (team) REFERENCES Teams(team_code));"""
+
+cursor.execute(comm)
+
+# create table for pitchers
+comm = """CREATE TABLE pit_stats (
+player_id VARCHAR(8) PRIMARY KEY,
+team VARCHAR(3),
+fname VARCHAR(12) NOT NULL,
+lname VARCHAR(20) NOT NULL,
+is_sp INTEGER,
+outs INTEGER DEFAULT 0,
+groundouts INTEGER DEFAULT 0,
+airouts INTEGER DEFAULT 0,
+strikeouts INTEGER DEFAULT 0,
+hits INTEGER DEFAULT 0,
+walks INTEGER DEFAULT 0,
+ERs INTEGER DEFAULT 0,
+TBF INTEGER DEFAULT 0,
+FOREIGN KEY (team) REFERENCES Teams(team_code));"""
+
+cursor.execute(comm)
+
+# add players into database
+for code in player_dict:            # for every team in the league
+    players = player_dict[code]     # get players on the team
+    while len(players["ids"]) > 0:  # for every player on the team
+        # get player information
+        id = players["ids"].pop(0).strip()
+        name = players["names"].pop(0)
+        name = name.replace("'", "''")
+        pos = players["positions"].pop(0).strip()
+        first, last = name.split(maxsplit=1)
+        first, last = first.strip(), last.strip()
+        
+        # determine which table to add the player to
+        if pos == "SP" or pos == "RP" or pos == "CL":
+            is_sp = pos == "SP"     # determine if pitcher is a starter
+            comm = f"""INSERT INTO pit_stats (player_id, fname, lname, team, is_sp) VALUES
+            ('{id}', '{first}', '{last}', '{code}', {is_sp});"""
+            cursor.execute(comm)
+        else:
+            comm = f"""INSERT INTO bat_stats (player_id, fname, lname, team) VALUES
+            ('{id}', '{first}', '{last}', '{code}');"""
+            cursor.execute(comm)
+
 conn.commit()
 conn.close()
-
-# test the dictionary
-for code in player_dict:
-    players = player_dict[code]
-    while len(players["ids"]) > 0:
-        id = players["ids"].pop(0)
-        name = players["names"].pop(0)
-        pos = players["positions"].pop(0)
-        first, last = name.split(maxsplit=1)
-        print(f"{code} | {id:9} | {pos:2} | {first.strip()} {last.strip()}")
