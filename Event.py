@@ -1,4 +1,5 @@
 import random
+from Player import Batter, Pitcher
 
 def pa(bat, pit):
     """
@@ -20,7 +21,7 @@ def pa(bat, pit):
     p_rand = random.random()*100
     
     # determine outcome
-    if b_rand < 23 and p_rand < 23:
+    if b_rand < bat.walk_num() and p_rand < pit.walk_num():
         return 5
     elif b_rand >= 50 and p_rand >= 50:
         return hit(bat)
@@ -128,3 +129,14 @@ def gidp(scenario):
             return 2
         else:
             return 1
+        
+batter = Batter('schlatr01', 'Tristin', 'Schlauch')
+pitcher = Pitcher('clemekr01', 'Kris', 'Clements')
+walks = 0
+
+for i in range(1000000):
+    if pa(batter, pitcher) == 5:
+        walks += 1
+
+print(f"Walks: {walks}")
+print(f"BB% = {walks/1000000:.3%}")

@@ -28,6 +28,9 @@ class Batter(Player):
     """
     def __init__(self, id, first, last):
         super().__init__(id, first, last)
+        self.__CON = 70
+        self.__POW = 70
+        self.__EYE = 70
         self.__hits = 0
         self.__2Bs = 0
         self.__3Bs = 0
@@ -37,6 +40,17 @@ class Batter(Player):
         self.__RBIs = 0
         self.__ABs = 0
         self.__PAs = 0
+
+    def walk_num(self):
+        """
+        Uses the Batter's EYE rating to determine the threshold number used by the Event
+        module to determine if the Batter walks or not during a plate appearance
+        """
+        # right now, I need to determine how I want to store this EYE info
+        # I think that I will "calculate" these attributes in Player init
+            # this could mean pulling the attribute value out of the DB or using IRL stats
+        # these attributes will be stored as an attribute of the Batter
+        return 1.6*max(self.__EYE, 52) - 83
 
     def base_hit(self, bases, cursor):
         """
@@ -199,6 +213,9 @@ class Pitcher(Player):
     """
     def __init__(self, id, first, last):
         super().__init__(id, first, last)
+        self.__CMD = 60
+        self.__STF = 70
+        self.__VEL = 70
         self.__GOs = 0
         self.__AOs = 0
         self.__Ks = 0
@@ -207,6 +224,17 @@ class Pitcher(Player):
         self.__ERs = 0
         self.__outs = 0
         self.__TBF = 0
+    
+    def walk_num(self):
+        """
+        Uses the Pitcher's CMD rating to determine the threshold number used by the Event
+        module to determine if the Pitcher issued a walk or not during a plate appearance
+        """
+        # right now, I need to determine how I want to store this CMD info
+        # I think that I will "calculate" these attributes in Player init
+            # this could mean pulling the attribute value out of the DB or using IRL stats
+        # these attributes will be stored as an attribute of the Pitcher
+        return 78 - 0.7*max(self.__CMD, 52)
 
     def groundout(self, cursor):
         """
