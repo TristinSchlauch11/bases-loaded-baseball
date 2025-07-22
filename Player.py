@@ -46,11 +46,20 @@ class Batter(Player):
         Uses the Batter's EYE rating to determine the threshold number used by the Event
         module to determine if the Batter walks or not during a plate appearance
         """
-        # right now, I need to determine how I want to store this EYE info
-        # I think that I will "calculate" these attributes in Player init
-            # this could mean pulling the attribute value out of the DB or using IRL stats
-        # these attributes will be stored as an attribute of the Batter
-        return 1.6*max(self.__EYE, 52) - 83
+        # EYE attribute will be "calculated" using IRL stats --> BB% = 0.00464(EYE) - 0.2407
+            # EYE = (BB% + 0.2407)/0.00464
+        # attributes will be stored as an attribute of the Batter
+        return 1.6*self.__EYE - 83
+    
+    def hit_num(self):
+        """
+        Uses the Batter's EYE and CON rating to determine the threshold number used by the
+        Event module to determine if the Batter gets a hit or not during a plate appearance
+        """
+        # CON attribute will be "calculated" using IRL stats --> AVG = 0.004(CON) - 0.035
+            # CON = (AVG + 0.035)/0.004
+        # attribute will be stored as an attribute of the Batter
+        return (4737 + (0.004*self.__CON - 0.035)*(29*self.walk_num() - 10000))/47.37
 
     def base_hit(self, bases, cursor):
         """
@@ -213,7 +222,7 @@ class Pitcher(Player):
     """
     def __init__(self, id, first, last):
         super().__init__(id, first, last)
-        self.__CMD = 60
+        self.__CMD = 70
         self.__STF = 70
         self.__VEL = 70
         self.__GOs = 0
@@ -230,11 +239,20 @@ class Pitcher(Player):
         Uses the Pitcher's CMD rating to determine the threshold number used by the Event
         module to determine if the Pitcher issued a walk or not during a plate appearance
         """
-        # right now, I need to determine how I want to store this CMD info
-        # I think that I will "calculate" these attributes in Player init
-            # this could mean pulling the attribute value out of the DB or using IRL stats
-        # these attributes will be stored as an attribute of the Pitcher
-        return 78 - 0.7*max(self.__CMD, 52)
+        # CMD attribute will be "calculated" using IRL stats --> BB% = 0.2262 - 0.00203(CMD)
+            # CMD = (0.2262 - BB%)/0.00203
+        # attributes will be stored as an attribute of the Pitcher
+        return 78 - 0.7*self.__CMD
+    
+    def hit_num(self):
+        """
+        Uses the Pitcher's CMD and STF rating to determine the threshold number used by the Event
+        module to determine if the Pitcher issued a hit or not during a plate appearance
+        """
+        # STF attribute will be "calculated" using IRL stats --> BAA = 0.42 - 0.0025(STF)
+            # CMD = (0.2262 - BB%)/0.00203
+        # attributes will be stored as an attribute of the Pitcher
+        return (4737 + (0.42 - 0.0025*self.__STF)*(29*self.walk_num() - 10000))/47.37
 
     def groundout(self, cursor):
         """

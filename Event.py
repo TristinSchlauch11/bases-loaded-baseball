@@ -23,7 +23,7 @@ def pa(bat, pit):
     # determine outcome
     if b_rand < bat.walk_num() and p_rand < pit.walk_num():
         return 5
-    elif b_rand >= 50 and p_rand >= 50:
+    elif b_rand >= bat.hit_num() and p_rand >= pit.hit_num():
         return hit(bat)
     else:
         return out(pit)
@@ -133,10 +133,22 @@ def gidp(scenario):
 batter = Batter('schlatr01', 'Tristin', 'Schlauch')
 pitcher = Pitcher('clemekr01', 'Kris', 'Clements')
 walks = 0
+hits = 0
+ab = 0
 
 for i in range(1000000):
-    if pa(batter, pitcher) == 5:
+    res = pa(batter, pitcher)
+    if res == 5:
         walks += 1
+    else:
+        ab += 1
+        if res < 5:
+            hits += 1
 
-print(f"Walks: {walks}")
+print(batter.walk_num())
+print(pitcher.walk_num())
+print(batter.hit_num())
+print(pitcher.hit_num())
+print(f"Hits: {hits}")
+print(f"AVG = {hits/ab:.3}")
 print(f"BB% = {walks/1000000:.3%}")
