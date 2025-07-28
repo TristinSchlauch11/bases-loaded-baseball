@@ -250,9 +250,18 @@ class Pitcher(Player):
         module to determine if the Pitcher issued a hit or not during a plate appearance
         """
         # STF attribute will be "calculated" using IRL stats --> BAA = 0.42 - 0.0025(STF)
-            # CMD = (0.2262 - BB%)/0.00203
+            # STF = (0.42 - BAA)/0.0025
         # attributes will be stored as an attribute of the Pitcher
         return (4737 + (0.42 - 0.0025*self.__STF)*(29*self.walk_num() - 10000))/47.37
+    
+    def k_num(self):
+        """
+        Uses the Pitcher's VEL rating to determine the threshold number used by the Event
+        module to determine if the Pitcher struckout a Batter or not during an Out Event
+        """
+        # VEL will be "calculated" using IRL stats --> K/(TBF - H - BB) = 0.0095(VEL) - 0.3437
+            # VEL = K/(0.0095*(TBF - H - BB)) + 36.18
+        return 0.95*self.__VEL - 34.37
 
     def groundout(self, cursor):
         """

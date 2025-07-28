@@ -66,7 +66,7 @@ def out(pit):
     o_rand = random.random()*100
 
     # determine result
-    if o_rand < 34:
+    if o_rand < pit.k_num():
         return 6
     elif o_rand < 68:
         return 7
@@ -132,23 +132,18 @@ def gidp(scenario):
         
 batter = Batter('schlatr01', 'Tristin', 'Schlauch')
 pitcher = Pitcher('clemekr01', 'Kris', 'Clements')
-walks = 0
-hits = 0
-ab = 0
+
+ks = 0
+outs = 0
 
 for i in range(1000000):
     res = pa(batter, pitcher)
-    if res == 5:
-        walks += 1
-    else:
-        ab += 1
-        if res < 5:
-            hits += 1
+    if res > 5:
+        outs += 1
+        if res == 6:
+            ks += 1
 
-print(batter.walk_num())
-print(pitcher.walk_num())
-print(batter.hit_num())
-print(pitcher.hit_num())
-print(f"Hits: {hits}")
-print(f"AVG = {hits/ab:.3}")
-print(f"BB% = {walks/1000000:.3%}")
+print(f"Strikeouts: {ks}")
+print(f"Outs: {outs}")
+print(f"K-Chance: {ks/outs:.2%}")
+print(f"K%: {ks/1000000:.1%}")
