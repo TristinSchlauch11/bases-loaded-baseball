@@ -225,6 +225,7 @@ class Pitcher(Player):
         self.__CMD = 70
         self.__STF = 70
         self.__VEL = 70
+        self.__gbrate = 0.42   # This number will be used to determine if the pitcher is a Ground Ball/Fly Ball pitcher --> avg. 42%
         self.__GOs = 0
         self.__AOs = 0
         self.__Ks = 0
@@ -262,6 +263,14 @@ class Pitcher(Player):
         # VEL will be "calculated" using IRL stats --> K/(TBF - H - BB) = 0.0095(VEL) - 0.3437
             # VEL = K/(0.0095*(TBF - H - BB)) + 36.18
         return 0.95*self.__VEL - 34.37
+    
+    def gb_num(self):
+        """
+        Uses the Pitcher's gbrate determine the threshold number used by the Event
+        module to determine if the Pitcher grounded out a Batter or not during an Out Event
+        """
+        # gbrate will be the raw GB% of the Pitcher
+        return self.k_num() + self.__gbrate*(100 - self.k_num())
 
     def groundout(self, cursor):
         """

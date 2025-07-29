@@ -68,7 +68,7 @@ def out(pit):
     # determine result
     if o_rand < pit.k_num():
         return 6
-    elif o_rand < 68:
+    elif o_rand < pit.gb_num():
         return 7
     else:
         return 8
@@ -134,6 +134,7 @@ batter = Batter('schlatr01', 'Tristin', 'Schlauch')
 pitcher = Pitcher('clemekr01', 'Kris', 'Clements')
 
 ks = 0
+gos = 0
 outs = 0
 
 for i in range(1000000):
@@ -142,8 +143,11 @@ for i in range(1000000):
         outs += 1
         if res == 6:
             ks += 1
+        if res == 7:
+            gos += 1
 
 print(f"Strikeouts: {ks}")
 print(f"Outs: {outs}")
 print(f"K-Chance: {ks/outs:.2%}")
+print(f"GO%: {gos/outs:.2%}")
 print(f"K%: {ks/1000000:.1%}")
