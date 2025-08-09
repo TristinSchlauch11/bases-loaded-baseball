@@ -43,14 +43,14 @@ def hit(bat):
     h_rand = random.random()*100
 
     # determine result
-    if h_rand <= 50:
-        return 1
-    elif h_rand <= 80:
-        return 2
-    elif h_rand <= 81:
-        return 3
-    else:
+    if h_rand >= bat.hr_num():
         return 4
+    elif h_rand >= bat.hr_num() - 1:
+        return 3
+    elif h_rand >= (bat.hr_num() - 1)*0.75:
+        return 2
+    else:
+        return 1
 
 def out(pit):
     """
@@ -129,25 +129,3 @@ def gidp(scenario):
             return 2
         else:
             return 1
-        
-batter = Batter('schlatr01', 'Tristin', 'Schlauch')
-pitcher = Pitcher('clemekr01', 'Kris', 'Clements')
-
-ks = 0
-gos = 0
-outs = 0
-
-for i in range(1000000):
-    res = pa(batter, pitcher)
-    if res > 5:
-        outs += 1
-        if res == 6:
-            ks += 1
-        if res == 7:
-            gos += 1
-
-print(f"Strikeouts: {ks}")
-print(f"Outs: {outs}")
-print(f"K-Chance: {ks/outs:.2%}")
-print(f"GO%: {gos/outs:.2%}")
-print(f"K%: {ks/1000000:.1%}")

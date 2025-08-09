@@ -31,15 +31,6 @@ class Batter(Player):
         self.__CON = 70
         self.__POW = 70
         self.__EYE = 70
-        self.__hits = 0
-        self.__2Bs = 0
-        self.__3Bs = 0
-        self.__HRs = 0
-        self.__BBs = 0
-        self.__runs = 0
-        self.__RBIs = 0
-        self.__ABs = 0
-        self.__PAs = 0
 
     def walk_num(self):
         """
@@ -60,13 +51,22 @@ class Batter(Player):
             # CON = (AVG + 0.035)/0.004
         # attribute will be stored as an attribute of the Batter
         return (4737 + (0.004*self.__CON - 0.035)*(29*self.walk_num() - 10000))/47.37
+    
+    def hr_num(self):
+        """
+        Uses the Batter's POW rating to determine the threshold number used by the
+        Event module to determine if the Batter hit a home run or not during a Hit event
+        """
+        # POW attribute will be "calculated" using IRL stats --> HR% = HR / H = 0.01(POW) + 0.843
+            # POW = ((HR/H) - 0.843)/0.01
+        # attribute will be stored as an attribute of the Batter
+        return 155.7 - self.__POW
 
     def base_hit(self, bases, cursor):
         """
         Updates the player stat database by accumulating batter stats for a base hit
         cursor is the cursor for the SQL database
         """
-
         # determine the hit type to accumulate
         hit_message = "hits = hits + 1,"
         if bases == 2:
@@ -89,7 +89,6 @@ class Batter(Player):
         Updates the player stat database by accumulating batter stats for a walk
         cursor is the cursor for the SQL database
         """
-    
         # create SQL command
         sql_command = f"""UPDATE bat_stats
         SET walks = walks + 1, PAs = PAs + 1
@@ -103,7 +102,6 @@ class Batter(Player):
         Updates the player stat database by accumulating batter stats for an out
         cursor is the cursor for the SQL database
         """
-    
         # create SQL command
         sql_command = f"""UPDATE bat_stats
         SET ABs = ABs + 1, PAs = PAs + 1
@@ -117,7 +115,6 @@ class Batter(Player):
         Updates the player stat database by accumulating batter stats for a sacrifice fly
         cursor is the cursor for the SQL database
         """
-    
         # create SQL command
         sql_command = f"""UPDATE bat_stats
         SET RBIs = RBIs + 1, PAs = PAs + 1
@@ -131,7 +128,6 @@ class Batter(Player):
         Updates the player stat database by accumulating batter stats for an out
         cursor is the cursor for the SQL database
         """
-    
         # create SQL command
         sql_command = f"""UPDATE bat_stats
         SET runs = runs + 1
@@ -145,7 +141,6 @@ class Batter(Player):
         Updates the player stat database by accumulating batter stats for an out
         cursor is the cursor for the SQL database
         """
-    
         # create SQL command
         sql_command = f"""UPDATE bat_stats
         SET RBIs = RBIs + 1
@@ -154,57 +149,106 @@ class Batter(Player):
         # execute command
         cursor.execute(sql_command)
 
-    def get_avg(self):
+    def get_avg(self, cursor):
         """
         Returns a floating point value of the batting average (AVG) of the Batter
         If printing this statistic, you should round to three decimal places and remove leading 0
         """
-        if self.__ABs == 0:
+        # query required stats
+        comm = f"""SELECT hits, ABs
+        FROM bat_stats
+        WHERE player_id = '{self.get_id()}';"""
+        cursor.execute(comm)
+
+        # unpack stats
+        (h, ab) = cursor.fetchone()
+
+        # compute and return AVG
+        if ab == 0:
             return 0.0
-        return self.__hits / self.__ABs
+        return h / ab
     
-    def get_obp(self):
+    def get_obp(self, cursor):
         """
         Returns a floating point value of the on-base percentage (OBP) of the Batter
         If printing this statistic, you should round to three decimal places and remove leading 0
         """
-        if self.__PAs == 0:
+        # query required stats
+        comm = f"""SELECT hits, walks, PAs
+        FROM bat_stats
+        WHERE player_id = '{self.get_id()}';"""
+        cursor.execute(comm)
+
+        # unpack stats
+        (h, bb, pa) = cursor.fetchone()
+
+        # compute and return OBP
+        if pa == 0:
             return 0.0
-        return (self.__hits + self.__BBs) / self.__PAs
+        return (h + bb) / pa
     
-    def get_slg(self):
+    def get_slg(self, cursor):
         """
         Returns a floating point value of the slugging percentage (SLG) of the Batter
         If printing this statistic, you should round to three decimal places and remove leading 0
         """
-        if self.__ABs == 0:
+        # query required stats
+        comm = f"""SELECT ABs
+        FROM bat_stats
+        WHERE player_id = '{self.get_id()}';"""
+        cursor.execute(comm)
+
+        # unpack stats
+        (ab, ) = cursor.fetchone()
+
+        if ab == 0:
             return 0.0
-        return (self.__hits + self.__2Bs * 2 + self.__3Bs * 3 + self.__HRs * 4) / self.__ABs
+        return self.get_tb(cursor) / ab
     
-    def get_ops(self):
+    def get_ops(self, cursor):
         """
         Returns a floating point value of the on-base plus slugging (OPS) of the Batter
         If printing this statistic, you should round to three decimal places and remove leading 0
         """
-        return self.get_obp() + self.get_slg()
+        return self.get_obp(cursor) + self.get_slg(cursor)
     
-    def get_xbh(self):
+    def get_xbh(self, cursor):
         """
         Returns an integer value of the extra base hits (XBH) of the Batter
         """
-        return self.__2Bs + self.__3Bs + self.__HRs
+        # query required stats
+        comm = f"""SELECT doubles, triples, homeruns
+        FROM bat_stats
+        WHERE player_id = '{self.get_id()}';"""
+        cursor.execute(comm)
+
+        # unpack stats
+        (dbls, tpls, hr) = cursor.fetchone()
+
+        # compute and return XBH
+        return dbls + tpls + hr
     
-    def get_tb(self):
+    def get_tb(self, cursor):
         """
         Returns an integer value of the total bases (TB) of the Batter
         """
-        return self.__hits + self.__2Bs * 2 + self.__3Bs * 3 + self.__HRs * 4
+        # query required stats
+        comm = f"""SELECT hits, doubles, triples, homeruns
+        FROM bat_stats
+        WHERE player_id = '{self.get_id()}';"""
+        cursor.execute(comm)
+
+        # unpack stats
+        (h, dbls, tpls, hr) = cursor.fetchone()
+
+        # compute and return TB
+        return h - self.get_xbh(cursor) + dbls * 2 + tpls * 3 + hr * 4
 
     def print_stats(self, cursor):
         """
         Prints the raw stats of the Batter
         """
-        # get stats from table
+        # query required stats
         comm = f"""SELECT lname, hits, doubles, triples, homeruns, walks, runs, RBIs, ABs, PAs
         FROM bat_stats
         WHERE player_id = '{self.get_id()}';"""
@@ -226,14 +270,6 @@ class Pitcher(Player):
         self.__STF = 70
         self.__VEL = 70
         self.__gbrate = 0.42   # This number will be used to determine if the pitcher is a Ground Ball/Fly Ball pitcher --> avg. 42%
-        self.__GOs = 0
-        self.__AOs = 0
-        self.__Ks = 0
-        self.__hits = 0
-        self.__BBs = 0
-        self.__ERs = 0
-        self.__outs = 0
-        self.__TBF = 0
     
     def walk_num(self):
         """
@@ -277,7 +313,6 @@ class Pitcher(Player):
         Updates the player stat database by accumulating pitcher stats for a groundout
         cursor is the cursor for the SQL database
         """
-    
         # create SQL command
         sql_command = f"""UPDATE pit_stats
         SET outs = outs + 1, groundouts = groundouts + 1, TBF = TBF + 1
@@ -291,7 +326,6 @@ class Pitcher(Player):
         Updates the player stat database by accumulating pitcher stats for an air out
         cursor is the cursor for the SQL database
         """
-    
         # create SQL command
         sql_command = f"""UPDATE pit_stats
         SET outs = outs + 1, airouts = airouts + 1, TBF = TBF + 1
@@ -305,7 +339,6 @@ class Pitcher(Player):
         Updates the player stat database by accumulating pitcher stats for a strikeout
         cursor is the cursor for the SQL database
         """
-    
         # create SQL command
         sql_command = f"""UPDATE pit_stats
         SET outs = outs + 1, strikeouts = strikeouts + 1, TBF = TBF + 1
@@ -319,7 +352,6 @@ class Pitcher(Player):
         Updates the player stat database by accumulating pitcher stats for a hit
         cursor is the cursor for the SQL database
         """
-    
         # create SQL command
         sql_command = f"""UPDATE pit_stats
         SET hits = hits + 1, TBF = TBF + 1
@@ -333,7 +365,6 @@ class Pitcher(Player):
         Updates the player stat database by accumulating pitcher stats for a walk
         cursor is the cursor for the SQL database
         """
-    
         # create SQL command
         sql_command = f"""UPDATE pit_stats
         SET walks = walks + 1, TBF = TBF + 1
@@ -348,7 +379,6 @@ class Pitcher(Player):
         Used to add outs that are collected in ways not included in methods above
         cursor is the cursor for the SQL database
         """
-    
         # create SQL command
         sql_command = f"""UPDATE pit_stats
         SET outs = outs + {outs}
@@ -363,7 +393,6 @@ class Pitcher(Player):
         Used to add outs that are collected in ways not included in methods above
         cursor is the cursor for the SQL database
         """
-    
         # create SQL command
         sql_command = f"""UPDATE pit_stats
         SET ERs = ERs + 1
@@ -396,59 +425,119 @@ class Pitcher(Player):
         # return desired stat
         return f"{outs // 3}.{outs % 3}"
     
-    def get_baa(self):
+    def get_baa(self, cursor):
         """
         Returns a floating point value of the batting average against (BAA) of the Pitcher
         If printing this statistic, you should round to three decimal places and remove leading 0
         """
-        if at_bats := self.__hits + self.__GOs + self.__AOs + self.__Ks == 0:
+        # query required stats
+        comm = f"""SELECT hits, groundouts, airouts, strikeouts
+        FROM pit_stats
+        WHERE player_id = '{self.get_id()}';"""
+        cursor.execute(comm)
+
+        # unpack stats
+        (h, go, ao, k) = cursor.fetchone()
+
+        # compute and return BAA
+        if (ab := h + go + ao + k) == 0:
             return 0.0
-        return self.__hits / at_bats
+        return h / ab
     
-    def get_obp(self):
+    def get_obp(self, cursor):
         """
         Returns a floating point value of the on base percentage (OBP) of the Pitcher
         If printing this statistic, you should round to three decimal places and remove leading 0
         """
-        if self.__TBF == 0:
+        # query required stats
+        comm = f"""SELECT hits, walks, TBF
+        FROM pit_stats
+        WHERE player_id = '{self.get_id()}';"""
+        cursor.execute(comm)
+
+        # unpack stats
+        (h, bb, tbf) = cursor.fetchone()
+
+        # compute and return OBP
+        if tbf == 0:
             return 0.0
-        return (self.__hits + self.__BBs) / self.__TBF
+        return (h + bb) / tbf
     
-    def get_whip(self):
+    def get_whip(self, cursor):
         """
         Returns a floating point value of the Walks Plus Hits per Inning Pitched (WHIP) of the Pitcher
         If printing this statistic, you should round to two decimal places
         """
-        if self.get_IP_calc() == 0:
+        # query required stats
+        comm = f"""SELECT hits, walks
+        FROM pit_stats
+        WHERE player_id = '{self.get_id()}';"""
+        cursor.execute(comm)
+
+        # unpack stats
+        (h, bb) = cursor.fetchone()
+
+        # compute and return WHIP
+        if self.get_IP_calc(cursor) == 0:
             return 0.0
-        return (self.__BBs + self.__hits) / self.get_IP_calc()
+        return (h + bb) / self.get_IP_calc(cursor)
     
-    def get_era(self):
+    def get_era(self, cursor):
         """
         Returns a floating point value of the earned run average (ERA) of the Pitcher
         If printing this statistic, you should round to two decimal places
         """
-        if self.get_IP_calc() == 0:
-            return 0.0
-        return (self.__ERs / self.get_IP_calc()) * 9
+        # query required stats
+        comm = f"""SELECT ERs
+        FROM pit_stats
+        WHERE player_id = '{self.get_id()}';"""
+        cursor.execute(comm)
 
-    def get_Kper9(self):
+        # unpack stats
+        (er, ) = cursor.fetchone()
+
+        # compute and return ERA
+        if self.get_IP_calc(cursor) == 0:
+            return 0.0
+        return (er / self.get_IP_calc(cursor)) * 9
+
+    def get_Kper9(self, cursor):
         """
         Returns a floating point value of the strikeouts per 9 (K/9) of the Pitcher
         If printing this statistic, you should round to two decimal places
         """
-        if self.get_IP_calc() == 0:
+        # query required stats
+        comm = f"""SELECT strikeouts
+        FROM pit_stats
+        WHERE player_id = '{self.get_id()}';"""
+        cursor.execute(comm)
+
+        # unpack stats
+        (k, ) = cursor.fetchone()
+
+        # compute and return K/9
+        if self.get_IP_calc(cursor) == 0:
             return 0.0
-        return (self.__Ks / self.get_IP_calc()) * 9
+        return (k / self.get_IP_calc(cursor)) * 9
     
-    def get_KtoBB(self):
+    def get_KtoBB(self, cursor):
         """
         Returns a floating point value of the strikeouts to walks (K/BB) of the Pitcher
         If printing this statistic, you should round to two decimal places
         """
-        if self.__BBs == 0:
+        # query required stats
+        comm = f"""SELECT strikeouts, walks
+        FROM pit_stats
+        WHERE player_id = '{self.get_id()}';"""
+        cursor.execute(comm)
+
+        # unpack stats
+        (k, bb) = cursor.fetchone()
+
+        # compute and return K/BB
+        if bb == 0:
             return 0.0
-        return self.__Ks / self.__BBs
+        return k / bb
 
     def print_stats(self, cursor):
         """

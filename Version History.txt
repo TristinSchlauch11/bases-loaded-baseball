@@ -1,8 +1,8 @@
 Bases Loaded Baseball Version History
 
-Current Version: V0.8.2
+Current Version: V0.9.0
 
-V0.9.1 - assigns attribute values to each player using real-life statistics
+V1.0.0 - assigns attribute values to each player using real-life statistics
     - assigns to each batter a CON, POW, and EYE value (SPD, DEF later)
     - assigns to each pitcher a CMD, STF, and VEL value (DEF, STA later)
 
