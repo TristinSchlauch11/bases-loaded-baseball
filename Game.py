@@ -79,8 +79,8 @@ class Game():
             print(f"Pitcher: {pit.get_last()}")
 
             # make next selection
-            sel = input("\nEnter 'h' to hit, 's' to substitute, or 'q' to quit game >> ")
-            # sel = "h"
+            # sel = input("\nEnter 'h' to hit, 's' to substitute, or 'q' to quit game >> ")
+            sel = "h"
 
             # execute next PA
             if sel == "h":

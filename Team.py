@@ -16,16 +16,16 @@ class Team():
         Used when the Team is queried from the database to play a game
         """
         # get batters
-        cursor.execute(f"SELECT player_id, fname, lname FROM bat_stats WHERE team = '{self.get_code()}';")
+        cursor.execute(f"SELECT player_id, fname, lname, con, pow, eye FROM bat_atts WHERE team = '{self.get_code()}';")
         batters = cursor.fetchall()
-        for (b_id, first, last) in batters:
-            self.add_batter(Batter(b_id, first, last))
+        for (b_id, first, last, con, pow, eye) in batters:
+            self.add_batter(Batter(b_id, first, last, con, pow, eye))
 
         # get pitchers
-        cursor.execute(f"SELECT player_id, fname, lname, is_sp FROM pit_stats WHERE team = '{self.get_code()}';")
+        cursor.execute(f"SELECT player_id, fname, lname, cmd, stf, vel, gbrate, is_sp FROM pit_atts WHERE team = '{self.get_code()}';")
         pitchers = cursor.fetchall()
-        for (p_id, first, last, is_sp) in pitchers:
-            self.add_pitcher(Pitcher(p_id, first, last), is_sp)
+        for (p_id, first, last, cmd, stf, vel, gbr, is_sp) in pitchers:
+            self.add_pitcher(Pitcher(p_id, first, last, cmd, stf, vel, gbr), is_sp)
 
     def get_name(self):
         """

@@ -26,11 +26,11 @@ class Batter(Player):
     """
     A subclass of Player, a Batter will only be able to hit and have batting methods
     """
-    def __init__(self, id, first, last):
+    def __init__(self, id, first, last, con, pow, eye):
         super().__init__(id, first, last)
-        self.__CON = 70
-        self.__POW = 70
-        self.__EYE = 70
+        self.__CON = con
+        self.__POW = pow
+        self.__EYE = eye
 
     def walk_num(self):
         """
@@ -57,8 +57,8 @@ class Batter(Player):
         Uses the Batter's POW rating to determine the threshold number used by the
         Event module to determine if the Batter hit a home run or not during a Hit event
         """
-        # POW attribute will be "calculated" using IRL stats --> HR% = HR / H = 0.01(POW) + 0.843
-            # POW = ((HR/H) - 0.843)/0.01
+        # POW attribute will be "calculated" using IRL stats --> HR% = HR / H = 0.01(POW) - 0.5573
+            # POW = ((HR/H) + 0.5573)/0.01
         # attribute will be stored as an attribute of the Batter
         return 155.7 - self.__POW
 
@@ -264,12 +264,12 @@ class Pitcher(Player):
     """
     A subclass of Player, a Pitcher will only be able to pitch and have pitching methods
     """
-    def __init__(self, id, first, last):
+    def __init__(self, id, first, last, cmd, stf, vel, gbr):
         super().__init__(id, first, last)
-        self.__CMD = 70
-        self.__STF = 70
-        self.__VEL = 70
-        self.__gbrate = 0.42   # This number will be used to determine if the pitcher is a Ground Ball/Fly Ball pitcher --> avg. 42%
+        self.__CMD = cmd
+        self.__STF = stf
+        self.__VEL = vel
+        self.__gbrate = gbr     # This number will be used to determine if the pitcher is a Ground Ball/Fly Ball pitcher --> avg. 42%
     
     def walk_num(self):
         """
