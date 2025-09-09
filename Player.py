@@ -1,38 +1,38 @@
 class Player():
     def __init__(self, id, first, last):
-        self.__id = id
-        self.__first = first
-        self.__last = last
+        self._id = id
+        self._first = first
+        self._last = last
 
     def get_id(self):
         """
         Returns the unique ID used to store their information in the SQL database
         """
-        return self.__id
+        return self._id
 
     def get_first(self):
         """
         Gets the first name of the player
         """
-        return self.__first
+        return self._first
     
     def get_last(self):
         """
         Gets the last name of the player
         """
-        return self.__last
+        return self._last
     
 class Batter(Player):
     """
     A subclass of Player, a Batter will only be able to hit and have batting methods
     """
     def __init__(self, id, first, last, con, pow, eye):
-        super().__init__(id, first, last)
-        self.__CON = con
-        self.__POW = pow
-        self.__EYE = eye
+        Player.__init__(self, id, first, last)
+        self._CON = con
+        self._POW = pow
+        self._EYE = eye
 
-    def walk_num(self):
+    def b_walk_num(self):
         """
         Uses the Batter's EYE rating to determine the threshold number used by the Event
         module to determine if the Batter walks or not during a plate appearance
@@ -40,9 +40,9 @@ class Batter(Player):
         # EYE attribute will be "calculated" using IRL stats --> BB% = 0.00464(EYE) - 0.2407
             # EYE = (BB% + 0.2407)/0.00464
         # attributes will be stored as an attribute of the Batter
-        return 1.6*self.__EYE - 83
+        return 1.6*self._EYE - 83
     
-    def hit_num(self):
+    def b_hit_num(self):
         """
         Uses the Batter's EYE and CON rating to determine the threshold number used by the
         Event module to determine if the Batter gets a hit or not during a plate appearance
@@ -50,7 +50,7 @@ class Batter(Player):
         # CON attribute will be "calculated" using IRL stats --> AVG = 0.004(CON) - 0.035
             # CON = (AVG + 0.035)/0.004
         # attribute will be stored as an attribute of the Batter
-        return (4737 + (0.004*self.__CON - 0.035)*(29*self.walk_num() - 10000))/47.37
+        return (4737 + (0.004*self._CON - 0.035)*(29*self.b_walk_num() - 10000))/47.37
     
     def hr_num(self):
         """
@@ -60,9 +60,9 @@ class Batter(Player):
         # POW attribute will be "calculated" using IRL stats --> HR% = HR / H = 0.01(POW) - 0.5573
             # POW = ((HR/H) + 0.5573)/0.01
         # attribute will be stored as an attribute of the Batter
-        return 155.7 - self.__POW
+        return 155.7 - self._POW
 
-    def base_hit(self, bases, cursor):
+    def b_hit(self, bases, cursor):
         """
         Updates the player stat database by accumulating batter stats for a base hit
         cursor is the cursor for the SQL database
@@ -84,7 +84,7 @@ class Batter(Player):
         # execute command
         cursor.execute(sql_command)
 
-    def walk(self, cursor):
+    def b_walk(self, cursor):
         """
         Updates the player stat database by accumulating batter stats for a walk
         cursor is the cursor for the SQL database
@@ -168,7 +168,7 @@ class Batter(Player):
             return 0.0
         return h / ab
     
-    def get_obp(self, cursor):
+    def get_b_obp(self, cursor):
         """
         Returns a floating point value of the on-base percentage (OBP) of the Batter
         If printing this statistic, you should round to three decimal places and remove leading 0
@@ -244,7 +244,7 @@ class Batter(Player):
         # compute and return TB
         return h - self.get_xbh(cursor) + dbls * 2 + tpls * 3 + hr * 4
 
-    def print_stats(self, cursor):
+    def print_b_stats(self, cursor):
         """
         Prints the raw stats of the Batter
         """
@@ -265,13 +265,13 @@ class Pitcher(Player):
     A subclass of Player, a Pitcher will only be able to pitch and have pitching methods
     """
     def __init__(self, id, first, last, cmd, stf, vel, gbr):
-        super().__init__(id, first, last)
-        self.__CMD = cmd
-        self.__STF = stf
-        self.__VEL = vel
-        self.__gbrate = gbr     # This number will be used to determine if the pitcher is a Ground Ball/Fly Ball pitcher --> avg. 42%
+        Player.__init__(self, id, first, last)
+        self._CMD = cmd
+        self._STF = stf
+        self._VEL = vel
+        self._gbrate = gbr     # This number will be used to determine if the pitcher is a Ground Ball/Fly Ball pitcher --> avg. 42%
     
-    def walk_num(self):
+    def p_walk_num(self):
         """
         Uses the Pitcher's CMD rating to determine the threshold number used by the Event
         module to determine if the Pitcher issued a walk or not during a plate appearance
@@ -279,9 +279,9 @@ class Pitcher(Player):
         # CMD attribute will be "calculated" using IRL stats --> BB% = 0.2262 - 0.00203(CMD)
             # CMD = (0.2262 - BB%)/0.00203
         # attributes will be stored as an attribute of the Pitcher
-        return 78 - 0.7*self.__CMD
+        return 78 - 0.7*self._CMD
     
-    def hit_num(self):
+    def p_hit_num(self):
         """
         Uses the Pitcher's CMD and STF rating to determine the threshold number used by the Event
         module to determine if the Pitcher issued a hit or not during a plate appearance
@@ -289,7 +289,7 @@ class Pitcher(Player):
         # STF attribute will be "calculated" using IRL stats --> BAA = 0.42 - 0.0025(STF)
             # STF = (0.42 - BAA)/0.0025
         # attributes will be stored as an attribute of the Pitcher
-        return (4737 + (0.42 - 0.0025*self.__STF)*(29*self.walk_num() - 10000))/47.37
+        return (4737 + (0.42 - 0.0025*self._STF)*(29*self.p_walk_num() - 10000))/47.37
     
     def k_num(self):
         """
@@ -298,7 +298,7 @@ class Pitcher(Player):
         """
         # VEL will be "calculated" using IRL stats --> K/(TBF - H - BB) = 0.0095(VEL) - 0.3437
             # VEL = K/(0.0095*(TBF - H - BB)) + 36.18
-        return 0.95*self.__VEL - 34.37
+        return 0.95*self._VEL - 34.37
     
     def gb_num(self):
         """
@@ -306,7 +306,7 @@ class Pitcher(Player):
         module to determine if the Pitcher grounded out a Batter or not during an Out Event
         """
         # gbrate will be the raw GB% of the Pitcher
-        return self.k_num() + self.__gbrate*(100 - self.k_num())
+        return self.k_num() + self._gbrate*(100 - self.k_num())
 
     def groundout(self, cursor):
         """
@@ -347,7 +347,7 @@ class Pitcher(Player):
         # execute command
         cursor.execute(sql_command)
 
-    def hit(self, cursor):
+    def p_hit(self, cursor):
         """
         Updates the player stat database by accumulating pitcher stats for a hit
         cursor is the cursor for the SQL database
@@ -360,7 +360,7 @@ class Pitcher(Player):
         # execute command
         cursor.execute(sql_command)
 
-    def walk(self, cursor):
+    def p_walk(self, cursor):
         """
         Updates the player stat database by accumulating pitcher stats for a walk
         cursor is the cursor for the SQL database
@@ -444,7 +444,7 @@ class Pitcher(Player):
             return 0.0
         return h / ab
     
-    def get_obp(self, cursor):
+    def get_p_obp(self, cursor):
         """
         Returns a floating point value of the on base percentage (OBP) of the Pitcher
         If printing this statistic, you should round to three decimal places and remove leading 0
@@ -539,7 +539,7 @@ class Pitcher(Player):
             return 0.0
         return k / bb
 
-    def print_stats(self, cursor):
+    def print_p_stats(self, cursor):
         """
         Prints the raw statistics of the Pitcher
         """
@@ -554,3 +554,12 @@ class Pitcher(Player):
 
         # display stats
         print(f"{name}: {self.get_IP_disp(cursor)} IP, {er} ER, {go} GO, {ao} AO, {k} K, {h} H, {bb} BB, {tbf} TBF")
+
+class TwoWayPlayer(Batter, Pitcher):
+    """
+    The Ohtani exception, a special type of player that can both bat and pitch
+    This player can use all methods in the Batter and Pitcher classes
+    """
+    def __init__(self, id, first, last, con, pow, eye, cmd, stf, vel, gbr):
+        Pitcher.__init__(self, id, first, last, cmd, stf, vel, gbr)
+        Batter.__init__(self, id, first, last, con, pow, eye)
